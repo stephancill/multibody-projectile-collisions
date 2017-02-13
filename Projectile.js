@@ -77,7 +77,7 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0}, vi={
         this.setVelocity((tmpPos.x - this.pos.x)/(tmpTime-this.t)*0.1, (this.pos.y - tmpPos.y)/(tmpTime-this.t)*0.1)
 
         // Draw
-        context.fillStyle = "white";
+        context.fillStyle = this.color;
         context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height)
     }
 }
