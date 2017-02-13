@@ -7,13 +7,14 @@ const CONSTANTS = {
 let canonBall1 = new Projectile(CONSTANTS);
 canonBall1.setPosition(0, 280);
 canonBall1.setSize(20, 20);
-canonBall1.setVelocity(100, 100);
+canonBall1.setVelocity(200,200);
 canonBall1.name = "canonBall1"
+canonBall1.color = "purple"
 
 let canonBall2 = new Projectile(CONSTANTS);
 canonBall2.setPosition(600-20, 280);
 canonBall2.setSize(20, 20);
-canonBall2.setVelocity(-100, 100);
+canonBall2.setVelocity(-200,200);
 canonBall2.name = "canonBall2"
 
 let projectiles = [canonBall1, canonBall2];
