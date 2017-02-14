@@ -70,8 +70,8 @@ calculateCollision = function (p1, p2) {
         let v1 = Math.pow((Math.pow(x1vi,2)+Math.pow(y1vi,2)),0.5);
         let v2 = Math.pow((Math.pow(x2vi,2)+Math.pow(y2vi,2)),0.5);
 
-        if (y1 == y2) {
-            cang = 0*Math.PI/180;
+        if (x1 == x2) {
+            cang = 90*Math.PI/180;
         } else {
             cang = Math.atan((y1-y2)/(x1-x2));
         }
