@@ -1,7 +1,7 @@
 const CONSTANTS = {
     g: -9.8,            // Gravity
-    timeScale: 1000/60,   // Multiply time increment
-    canvasScale: 0.015
+    timeScale: 1/1000,   // Multiply time increment
+    canvasScale: 0.01
 }
 // TODO: Collisions with walls
 let canonBall1 = new Projectile(CONSTANTS);
@@ -68,33 +68,37 @@ comparePositions = function (p1, p2) {
 calculateCollision = function (p1, p2) {
     if (!this.colliding) {
         console.log(p1.vel, p2.vel);
-        let x1 = p1.pos.x+p1.size.width/2;
-        let y1 = p1.pos.y+p1.size.height/2;
+        let x1 = p1.pos.x;
+        let y1 = p1.pos.y;
         let x1vi = p1.vel.x;
         let y1vi = p1.vel.y;
         let m1 = p1.mass;
 
-        let x2 = p2.pos.x+p2.size.width/2;
-        let y2 = p2.pos.y+p2.size.height/2;
+        let x2 = p2.pos.x;
+        let y2 = p2.pos.y;
         let x2vi = p2.vel.x;
         let y2vi = p2.vel.y;
         let m2 = p2.mass;
 
-        let t = 0;
-        if (x1!=x2) {
-            t = Math.abs(p1.pos.x-p2.pos.x)/(p1.vel.x-p2.vel.x);
-        } else {
-            t = Math.abs(p1.pos.y-p2.pos.y)/(p1.vel.y-p2.vel.y);
-        }
-        x1 = p1.pos.x + p1.vel.x*t + 1/2*p1.a*Math.pow(t,2);
-        y1 = p1.pos.y + p1.vel.y*t + 1/2*p1.a*Math.pow(t,2)
-        // x doesn't change
-        yvi1 = p1.vel.y + CONSTANTS.g*t;
+        let tcol = 0;
 
-        x2 = p2.pos.x + p2.vel.x*t + 1/2*p2.a*Math.pow(t,2);
-        y2 = p2.pos.y + p2.vel.y*t + 1/2*p2.a*Math.pow(t,2)
+        let a = Math.pow((x1vi-x2vi),2)+Math.pow((y1vi-y2vi),2);
+        let b = 2*(x1-x2)*(x1vi-x2vi)+2*(y1-y2)*(y1vi-y2vi);
+        let c = Math.pow((x1-x2),2)+Math.pow((y1-y2),2)+Math.pow((y1-y2),2)-Math.pow((p1.size.width-p2.size.width),2)
+
+        tcol = (-1*b+Math.pow(Math.pow(b,2)-4*a*c,0.5))/(2*a);
+
+        console.log(tcol);
+
+        x1 = p1.pos.x + p1.vel.x*tcol + 1/2*p1.a*Math.pow(tcol,2);
+        y1 = p1.pos.y + p1.vel.y*tcol + 1/2*p1.g*Math.pow(tcol,2)
         // x doesn't change
-        yvi2 = p2.vel.y + CONSTANTS.g*t;
+        yvi1 = p1.vel.y + CONSTANTS.g*tcol;
+
+        x2 = p2.pos.x + p2.vel.x*tcol + 1/2*p2.a*Math.pow(tcol,2);
+        y2 = p2.pos.y + p2.vel.y*tcol + 1/2*p2.g*Math.pow(tcol,2)
+        // x doesn't change
+        yvi2 = p2.vel.y + CONSTANTS.g*tcol;
 
         let cang = 0;
 
@@ -103,7 +107,7 @@ calculateCollision = function (p1, p2) {
         let v1 = Math.pow((Math.pow(x1vi,2)+Math.pow(y1vi,2)),0.5);
         let v2 = Math.pow((Math.pow(x2vi,2)+Math.pow(y2vi,2)),0.5);
 
-        if (x1 == x2) {
+        if (x1 === x2) {
             cang = 90*Math.PI/180;
         } else {
             cang = Math.atan((y1-y2)/(x1-x2));
@@ -117,11 +121,15 @@ calculateCollision = function (p1, p2) {
         console.log("In: \n(obj1)", p1.name, x1vi, y1vi, m1, " \n(obj2)", p2.name, x2vi, y2vi, m2);
         console.log("Out: \n(obj1)", x1vf, y1vf, " \n(obj2)", x2vf, y2vf);
 
+        console.log(p1.pos.x, p1.pos.y);
+
         p2.setVelocity(x2vf, y2vf);
         p1.setVelocity(x1vf, y1vf);
 
         p1.setPosition(x1, y1);
         p2.setPosition(x2, y2)
+
+        console.log(p1.pos.x, p1.pos.y);
 
         p1.colliding = true;
         p2.colliding = true;
