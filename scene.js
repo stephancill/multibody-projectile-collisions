@@ -5,10 +5,10 @@ const CONSTANTS = {
 }
 
 let canonBall1 = new Projectile(CONSTANTS);
-canonBall1.setPosition(300, 280);
+canonBall1.setPosition(150, 280);
 canonBall1.setSize(20, 20);
-canonBall1.setVelocity(0,101);
-canonBall1.mass = 1000;
+canonBall1.setVelocity(50,100);
+canonBall1.mass = 20;
 canonBall1.name = "canonBall1"
 canonBall1.color = "purple"
 
@@ -16,6 +16,7 @@ let canonBall2 = new Projectile(CONSTANTS);
 canonBall2.setPosition(600-20, 280);
 canonBall2.setSize(20, 20);
 canonBall2.setVelocity(-200,100);
+canonBall2.mass = 10;
 canonBall2.name = "canonBall2"
 
 let projectiles = [canonBall1, canonBall2];
@@ -70,9 +71,9 @@ calculateCollision = function (p1, p2) {
         let v2 = Math.pow((Math.pow(x2vi,2)+Math.pow(y2vi,2)),0.5);
 
         if (y1 == y2) {
-            cang = 90*Math.PI/180;
+            cang = 0*Math.PI/180;
         } else {
-            cang = Math.atan((x1-x2)/(y1-y2));
+            cang = Math.atan((y1-y2)/(x1-x2));
         }
         // let tmp1xvf = ((v1*Math.cos(ang1-cang)*(m1-m2) + 2*m2*x2vi*Math.cos(ang2-cang)) / (m1+m2)) * Math.cos(cang) + x1vi*Math.sin(ang1-cang)*Math.cos(cang+Math.PI/2)
         // x1vf = (((v1*Math.cos(ang1-cang)*(m1-m2)+2*m2*v2*Math.cos(ang2-cang))/(m1+m2))*Math.cos(cang))+v1*Math.sin(ang1-cang)*Math.cos(cang+Math.PI/2);
@@ -88,8 +89,8 @@ calculateCollision = function (p1, p2) {
         console.log("In: \n(obj1)", p1.name, x1vi, y1vi, m1, " \n(obj2)", p2.name, x2vi, y2vi, m2);
         console.log("Out: \n(obj1)", x1vf, y1vf, " \n(obj2)", x2vf, y2vf);
 
-        p1.setVelocity(x2vf, y2vf);
-        p2.setVelocity(x1vf, y1vf);
+        p2.setVelocity(x2vf, y2vf);
+        p1.setVelocity(x1vf, y1vf);
 
         p1.colliding = true;
         p2.colliding = true;
