@@ -1,4 +1,4 @@
-function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0}, vi={x: 0, y:0}) {
+function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radius: 0}, vi={x: 0, y:0}) {
     /*
     Constructor:
         {
@@ -77,7 +77,13 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0}, vi={
         this.setVelocity((tmpPos.x - this.pos.x)/(tmpTime-this.t)*0.1, (this.pos.y - tmpPos.y)/(tmpTime-this.t)*0.1)
 
         // Draw
+        var startPoint = (Math.PI/180)*0;
+        var endPoint = (Math.PI/180)*360;
         context.fillStyle = this.color;
-        context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height)
+        context.beginPath();
+        context.arc(this.pos.x,this.pos.y,this.size.width,startPoint,endPoint,true);
+        context.fill();
+        context.closePath();
+        // context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height)
     }
 }
