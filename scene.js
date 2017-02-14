@@ -1,5 +1,5 @@
 const CONSTANTS = {
-    g: -9.8,            // Gravity
+    g: 1,            // Gravity
     timeScale: 1/1000,   // Multiply time increment
     canvasScale: 0.01
 }
@@ -8,7 +8,7 @@ let canonBall1 = new Projectile(CONSTANTS);
 canonBall1.setPosition(150, 140);
 canonBall1.setSize(20, 20);
 canonBall1.setVelocity(40,-100);
-canonBall1.mass = 10;
+canonBall1.mass = 0.00000000000001;
 canonBall1.name = "canonBall1"
 canonBall1.color = "purple"
 
@@ -16,14 +16,14 @@ let canonBall2 = new Projectile(CONSTANTS);
 canonBall2.setPosition(600-20, 280);
 canonBall2.setSize(20, 20);
 canonBall2.setVelocity(-200,100);
-canonBall2.mass = 100;
+canonBall2.mass = 0;
 canonBall2.name = "canonBall2"
 
 let canonBall3 = new Projectile(CONSTANTS);
 canonBall3.setPosition(0, 280);
 canonBall3.setSize(20, 20);
 canonBall3.setVelocity(200,100);
-canonBall3.mass = 15;
+canonBall3.mass = 1000000000000;
 canonBall3.name = "canonBall3"
 canonBall3.color = "yellow"
 
@@ -31,7 +31,7 @@ let canonBall4 = new Projectile(CONSTANTS);
 canonBall4.setPosition(100, 280);
 canonBall4.setSize(20, 20);
 canonBall4.setVelocity(200,120);
-canonBall4.mass = 20;
+canonBall4.mass = 1000000000000;
 canonBall4.name = "canonBall4"
 canonBall4.color = "pink"
 
@@ -96,7 +96,7 @@ calculateCollision = function (p1, p2) {
         y1vf = ((y1vi*Math.cos(ang1-cang)*(m1-m2) + 2*m2*y2vi*Math.cos(ang2-cang)) / (m1+m2)) * Math.sin(cang) + y1vi*Math.cos(ang1-cang)*Math.sin(cang+Math.PI/2)
 
         x2vf = ((x2vi*Math.cos(ang2-cang)*(m2-m1) + 2*m1*x1vi*Math.cos(ang1-cang)) / (m2+m1)) * Math.cos(cang) + x2vi*Math.sin(ang2-cang)*Math.cos(cang+Math.PI/2)
-        y2vf = ((y2vi*Math.cos(ang2-cang)*(m2-m1) + 2*m1*y1vi*Math.cos(ang1-cang)) / (m2+m1)) * Math.sin(cang) + y2vi*Math.cos(ang2-cang)*Math.sin(cang+Math.PI/2)
+        y2vf = ((y2vi*Math.cos(ang2-cang)*(m2-m1) + 2*m1*y1vi*Math.cos(ang1-cang)) / (m2+m1)) * Math.sin(cang) + y2vi*Math.sin(ang2-cang)*Math.sin(cang+Math.PI/2)
         console.log("In: \n(obj1)", p1.name, x1vi, y1vi, m1, " \n(obj2)", p2.name, x2vi, y2vi, m2);
         console.log("Out: \n(obj1)", x1vf, y1vf, " \n(obj2)", x2vf, y2vf);
 
