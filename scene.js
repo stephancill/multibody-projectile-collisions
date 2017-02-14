@@ -1,23 +1,24 @@
 const CONSTANTS = {
-    g: 0,            // Gravity
-    timeScale: 1/1000,   // Multiply time increment
-    canvasScale: 0.01
+    g: -9.8,            // Gravity
+    timeScale: 1/100,   // Multiply time increment
+    canvasScale: 0.015
 }
-
+// TODO: Collisions with walls
 let canonBall1 = new Projectile(CONSTANTS);
-canonBall1.setPosition(150, 20);
+canonBall1.setPosition(20, 280);
 canonBall1.setSize(20, 20);
-canonBall1.setVelocity(40,400);
+canonBall1.setVelocity(200,200);
 canonBall1.mass = 10;
 canonBall1.name = "canonBall1"
 canonBall1.color = "purple"
 
 let canonBall2 = new Projectile(CONSTANTS);
-canonBall2.setPosition(600-20, 90);
+canonBall2.setPosition(600-20, 280);
 canonBall2.setSize(20, 20);
-canonBall2.setVelocity(-200,-1000);
+canonBall2.setVelocity(-200,200);
 canonBall2.mass = 10;
 canonBall2.name = "canonBall2"
+canonBall2.color = "white"
 
 let canonBall3 = new Projectile(CONSTANTS);
 canonBall3.setPosition(20, 20);
@@ -35,7 +36,7 @@ canonBall4.mass = 10;
 canonBall4.name = "canonBall4"
 canonBall4.color = "pink"
 
-let projectiles = [canonBall1, canonBall2, canonBall3, canonBall4];
+let projectiles = [canonBall1, canonBall2];
 let checked = [];
 let collidingProjectiles = [];
 
