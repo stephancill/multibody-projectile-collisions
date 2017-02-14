@@ -5,7 +5,7 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
             constants: { g },
             position: {x, y},
             size: {width === radius, height},
-            vi: {vix, viy}          // vi = velocity initial
+            vi: {vix, viy}
         }
     */
     this.t = 0
@@ -31,7 +31,7 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
     }
     this.updatePosition = function () {
         this.pos.x += this.vel.x*constants.canvasScale;
-        this.pos.y -= this.vel.y*constants.canvasScale; // HTML5 Canvas y coordinates ascend from bottom to top, so we reverse is
+        this.pos.y -= this.vel.y*constants.canvasScale; // HTML5 Canvas y coordinates ascend from bottom to top, so we reverse it
     }
 
     // Getters
@@ -76,9 +76,15 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
         this.setVelocity((tmpPos.x - this.pos.x)/(tmpTime-this.t)*0.1, (this.pos.y - tmpPos.y)/(tmpTime-this.t)*0.1)
 
         if (this.pos.x + this.size.width > context.canvas.width || this.pos.x - this.size.width < 0) {
+            if (this.pos.x - this.size.width < 0) {
+                this.setPosition(this.size.width, this.pos.y);
+            } else {
+                this.setPosition(context.canvas.width-this.size.width, this.pos.y);
+            }
             this.setVelocity(-this.vel.x, this.vel.y)
         }
-        if (this.pos.y - this.size.width < 0) { // Ground is already accounted for
+        if (this.pos.y - this.size.width < 0) { // Ground is already accounted for (undo this)
+            this.setPosition(this.pos.x, this.size.width)
             this.setVelocity(this.vel.x, -this.vel.y)
         }
 
