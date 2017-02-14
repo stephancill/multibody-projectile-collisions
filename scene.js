@@ -1,5 +1,5 @@
 const CONSTANTS = {
-    g: 1,            // Gravity
+    g: -9.8,            // Gravity
     timeScale: 1/1000,   // Multiply time increment
     canvasScale: 0.01
 }
@@ -20,7 +20,7 @@ canonBall2.mass = 0;
 canonBall2.name = "canonBall2"
 
 let canonBall3 = new Projectile(CONSTANTS);
-canonBall3.setPosition(0, 280);
+canonBall3.setPosition(20, 280);
 canonBall3.setSize(20, 20);
 canonBall3.setVelocity(200,100);
 canonBall3.mass = 1000000000000;

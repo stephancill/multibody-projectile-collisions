@@ -4,7 +4,7 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
         {
             constants: { g },
             position: {x, y},
-            size: {width, height},
+            size: {width === radius, height},
             vi: {vix, viy}          // vi = velocity initial
         }
     */
@@ -70,11 +70,17 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
             console.log("I'm colliding");
         }
         this.updatePosition();
-        // console.log("Old velocity", this.vel.x, this.vel.y);
         if (this.pos.y > context.canvas.height-this.size.width) {
             this.pos.y = context.canvas.height-this.size.width;
         }
         this.setVelocity((tmpPos.x - this.pos.x)/(tmpTime-this.t)*0.1, (this.pos.y - tmpPos.y)/(tmpTime-this.t)*0.1)
+
+        if (this.pos.x + this.size.width > context.canvas.width || this.pos.x - this.size.width < 0) {
+            this.setVelocity(-this.vel.x, this.vel.y)
+        }
+        if (this.pos.y - this.size.width < 0) { // Ground is already accounted for
+            this.setVelocity(this.vel.x, -this.vel.y)
+        }
 
         // Draw
         var startPoint = (Math.PI/180)*0;
