@@ -15,7 +15,9 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0}, vi={
     this.pos = pos;
     this.size = size;
     this.vel = vi;
-    this.name = "Unnamed Projectile"
+    this.name = "Unnamed Projectile";
+    this.color = "white";
+    this.colliding = false;
 
     // Computed
     this.updateVelocity = function () {
@@ -30,23 +32,6 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0}, vi={
     this.updatePosition = function () {
         this.pos.x += this.vel.x*constants.canvasScale;
         this.pos.y -= this.vel.y*constants.canvasScale; // HTML5 Canvas y coordinates ascend from bottom to top, so we reverse is
-        // console.log(projectiles);
-        let self = this
-        // Detect collision
-        projectiles.map(p => {
-            if (p.name !== self.name) {
-                self.comparePositions(p);
-            }
-        });
-    }
-    this.collision = function () {
-        console.log("collision");
-    }
-    this.comparePositions = function (p) {
-        // console.log("Dpos: ", Math.pow(Math.pow((this.pos.x - pos.x), 2)+Math.pow((this.pos.y - pos.y), 2), 0.5), "Radius: ", this.size.width + size.width   );
-        if (Math.pow(Math.pow((this.pos.x - p.pos.x), 2)+Math.pow((this.pos.y - p.pos.y), 2), 0.5) <= this.size.width + p.size.width) {
-            this.collision(p);
-        }
     }
 
     // Getters
@@ -74,10 +59,16 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0}, vi={
         this.vel.y = vy;
     }
 
+    // Rendering
     this.render = function (context) {
         let tmpPos = {x: this.pos.x, y: this.pos.y};
         let tmpTime = this.t;
-        this.updateVelocity();
+        if (!this.colliding) {
+            this.updateVelocity();
+        } else {
+            this.t += 1 * constants.timeScale; // Increment time
+            console.log("I'm colliding");
+        }
         this.updatePosition();
         // console.log("Old velocity", this.vel.x, this.vel.y);
         if (this.pos.y > context.canvas.height-this.size.width) {
@@ -86,7 +77,7 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0}, vi={
         this.setVelocity((tmpPos.x - this.pos.x)/(tmpTime-this.t)*0.1, (this.pos.y - tmpPos.y)/(tmpTime-this.t)*0.1)
 
         // Draw
-        context.fillStyle = "white";
+        context.fillStyle = this.color;
         context.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height)
     }
 }
