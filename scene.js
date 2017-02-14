@@ -1,13 +1,13 @@
 const CONSTANTS = {
     g: -9.8,            // Gravity
-    timeScale: 1/100,   // Multiply time increment
+    timeScale: 1000/60,   // Multiply time increment
     canvasScale: 0.015
 }
 // TODO: Collisions with walls
 let canonBall1 = new Projectile(CONSTANTS);
 canonBall1.setPosition(20, 280);
 canonBall1.setSize(20, 20);
-canonBall1.setVelocity(200,200);
+canonBall1.setVelocity(150,150);
 canonBall1.mass = 10;
 canonBall1.name = "canonBall1"
 canonBall1.color = "purple"
@@ -15,7 +15,7 @@ canonBall1.color = "purple"
 let canonBall2 = new Projectile(CONSTANTS);
 canonBall2.setPosition(600-20, 280);
 canonBall2.setSize(20, 20);
-canonBall2.setVelocity(-200,200);
+canonBall2.setVelocity(-150,150);
 canonBall2.mass = 10;
 canonBall2.name = "canonBall2"
 canonBall2.color = "white"
@@ -80,6 +80,22 @@ calculateCollision = function (p1, p2) {
         let y2vi = p2.vel.y;
         let m2 = p2.mass;
 
+        let t = 0;
+        if (x1!=x2) {
+            t = Math.abs(p1.pos.x-p2.pos.x)/(p1.vel.x-p2.vel.x);
+        } else {
+            t = Math.abs(p1.pos.y-p2.pos.y)/(p1.vel.y-p2.vel.y);
+        }
+        x1 = p1.pos.x + p1.vel.x*t + 1/2*p1.a*Math.pow(t,2);
+        y1 = p1.pos.y + p1.vel.y*t + 1/2*p1.a*Math.pow(t,2)
+        // x doesn't change
+        yvi1 = p1.vel.y + CONSTANTS.g*t;
+
+        x2 = p2.pos.x + p2.vel.x*t + 1/2*p2.a*Math.pow(t,2);
+        y2 = p2.pos.y + p2.vel.y*t + 1/2*p2.a*Math.pow(t,2)
+        // x doesn't change
+        yvi2 = p2.vel.y + CONSTANTS.g*t;
+
         let cang = 0;
 
         let ang1 = Math.atan(y1vi/x1vi);
@@ -104,8 +120,12 @@ calculateCollision = function (p1, p2) {
         p2.setVelocity(x2vf, y2vf);
         p1.setVelocity(x1vf, y1vf);
 
+        p1.setPosition(x1, y1);
+        p2.setPosition(x2, y2)
+
         p1.colliding = true;
         p2.colliding = true;
+
     }
 }
 function update() {
@@ -139,7 +159,7 @@ function update() {
         }
         checked = []
         projectiles.map(p=> {
-            // console.log(p.vel);
+            // console.log(p.t);
             p.render(cc);
         });
     }
