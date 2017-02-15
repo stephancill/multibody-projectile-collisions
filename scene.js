@@ -1,5 +1,5 @@
 const CONSTANTS = {
-    g: -9.8,            // Gravity
+    g: 0,            // Gravity
     timeScale: 1/1000,   // Multiply time increment
     canvasScale: 0.01
 }
@@ -16,7 +16,7 @@ let canonBall2 = new Projectile(CONSTANTS);
 canonBall2.setPosition(600-20, 280);
 canonBall2.setSize(20, 20);
 canonBall2.setVelocity(-150,200);
-canonBall2.mass = 20;
+canonBall2.mass = 10;
 canonBall2.name = "canonBall2"
 canonBall2.color = "white"
 
@@ -188,6 +188,7 @@ function update() {
         projectiles.map(p=> {
             // console.log(p.t);
             p.render(cc);
+            p.setComputeVelocity();
         });
     }
 }

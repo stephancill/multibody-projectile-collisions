@@ -19,6 +19,9 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
     this.color = "white";
     this.colliding = false;
 
+    this.tmpTime = 0;
+    this.tmpPos = this.pos;
+
     // Computed
     this.updateVelocity = function () {
         // Kinematics
@@ -32,6 +35,9 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
     this.updatePosition = function () {
         this.pos.x += this.vel.x*constants.canvasScale;
         this.pos.y -= this.vel.y*constants.canvasScale; // HTML5 Canvas y coordinates ascend from bottom to top, so we reverse it
+    }
+    this.setComputeVelocity = function () {
+        this.setVelocity((this.tmpPos.x - this.pos.x)/(this.tmpTime-this.t)*0.1, (this.pos.y - this.tmpPos.y)/(this.tmpTime-this.t)*0.1);
     }
 
     // Getters
@@ -61,15 +67,14 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
 
     // Rendering
     this.render = function (context) {
-        let tmpPos = {x: this.pos.x, y: this.pos.y};
-        let tmpTime = this.t;
+        this.tmpPos = {x: this.pos.x, y: this.pos.y};
+        this.tmpTime = this.t;
         if (!this.colliding) {
             this.updateVelocity();
         } else {
             this.t += 1 * constants.timeScale; // Increment time
             console.log("I'm colliding");
         }
-        this.updatePosition();
         // this.setVelocity((tmpPos.x - this.pos.x)/(tmpTime-this.t)*0.1, (this.pos.y - tmpPos.y)/(tmpTime-this.t)*0.1)
 
         if (this.pos.x + this.size.width > context.canvas.width || this.pos.x - this.size.width < 0) {
@@ -79,6 +84,7 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
                 this.setPosition(context.canvas.width-this.size.width, this.pos.y);
             }
             this.setVelocity(-this.vel.x, this.vel.y)
+            // this.updatePosition();
         }
         if (this.pos.y - this.size.width < 0 || this.pos.y + this.size.width > context.canvas.height) { // Ground is already accounted for (undo this)
             if (this.pos.y > context.canvas.height-this.size.width) {
@@ -88,7 +94,9 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
                 this.setPosition(this.pos.x, this.size.width)
             }
             this.setVelocity(this.vel.x, -this.vel.y)
+            // this.updatePosition();
         }
+        this.updatePosition();
 
         // Draw
         var startPoint = (Math.PI/180)*0;
