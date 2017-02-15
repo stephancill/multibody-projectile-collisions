@@ -7,7 +7,7 @@ const CONSTANTS = {
 let canonBall1 = new Projectile(CONSTANTS);
 canonBall1.setPosition(20, 280);
 canonBall1.setSize(20, 20);
-canonBall1.setVelocity(150,150);
+canonBall1.setVelocity(150,200);
 canonBall1.mass = 10;
 canonBall1.name = "canonBall1"
 canonBall1.color = "purple"
@@ -15,8 +15,8 @@ canonBall1.color = "purple"
 let canonBall2 = new Projectile(CONSTANTS);
 canonBall2.setPosition(600-20, 280);
 canonBall2.setSize(20, 20);
-canonBall2.setVelocity(-150,150);
-canonBall2.mass = 10;
+canonBall2.setVelocity(-150,200);
+canonBall2.mass = 20;
 canonBall2.name = "canonBall2"
 canonBall2.color = "white"
 
@@ -63,11 +63,15 @@ comparePositions = function (p1, p2) {
         if (p1.colliding) {
             p1.colliding = false
         }
+        return false
     }
 }
 calculateCollision = function (p1, p2) {
     if (!this.colliding) {
-        console.log(p1.vel, p2.vel);
+        // console.log(p1.pos.x, p1.pos.y);
+        // console.log(p1.pos.x, p1.pos.y);
+
+        // console.log(p1.vel, p2.vel);
         let x1 = p1.pos.x;
         let y1 = p1.pos.y;
         let x1vi = p1.vel.x;
@@ -80,25 +84,25 @@ calculateCollision = function (p1, p2) {
         let y2vi = p2.vel.y;
         let m2 = p2.mass;
 
-        let tcol = 0;
+        // let tcol = 0;
+        //
+        // let a = Math.pow((x1vi-x2vi),2)+Math.pow((y1vi-y2vi),2);
+        // let b = 2*(x1-x2)*(x1vi-x2vi)+2*(y1-y2)*(y1vi-y2vi);
+        // let c = Math.pow((x1-x2),2)+Math.pow((y1-y2),2)+Math.pow((y1-y2),2)-Math.pow((p1.size.width-p2.size.width),2)
+        //
+        // tcol = (-1*b+Math.pow(Math.pow(b,2)-4*a*c,0.5))/(2*a);
+        //
+        // console.log(tcol);
 
-        let a = Math.pow((x1vi-x2vi),2)+Math.pow((y1vi-y2vi),2);
-        let b = 2*(x1-x2)*(x1vi-x2vi)+2*(y1-y2)*(y1vi-y2vi);
-        let c = Math.pow((x1-x2),2)+Math.pow((y1-y2),2)+Math.pow((y1-y2),2)-Math.pow((p1.size.width-p2.size.width),2)
-
-        tcol = (-1*b+Math.pow(Math.pow(b,2)-4*a*c,0.5))/(2*a);
-
-        console.log(tcol);
-
-        x1 = p1.pos.x + p1.vel.x*tcol + 1/2*p1.a*Math.pow(tcol,2);
-        y1 = p1.pos.y + p1.vel.y*tcol + 1/2*p1.g*Math.pow(tcol,2)
-        // x doesn't change
-        yvi1 = p1.vel.y + CONSTANTS.g*tcol;
-
-        x2 = p2.pos.x + p2.vel.x*tcol + 1/2*p2.a*Math.pow(tcol,2);
-        y2 = p2.pos.y + p2.vel.y*tcol + 1/2*p2.g*Math.pow(tcol,2)
-        // x doesn't change
-        yvi2 = p2.vel.y + CONSTANTS.g*tcol;
+        // x1 = p1.pos.x + p1.vel.x*tcol + 1/2*p1.a*Math.pow(tcol,2);
+        // y1 = p1.pos.y + p1.vel.y*tcol + 1/2*p1.g*Math.pow(tcol,2)
+        // // x doesn't change
+        // yvi1 = p1.vel.y + CONSTANTS.g*tcol;
+        //
+        // x2 = p2.pos.x + p2.vel.x*tcol + 1/2*p2.a*Math.pow(tcol,2);
+        // y2 = p2.pos.y + p2.vel.y*tcol + 1/2*p2.g*Math.pow(tcol,2)
+        // // x doesn't change
+        // yvi2 = p2.vel.y + CONSTANTS.g*tcol;
 
         let cang = 0;
 
@@ -112,12 +116,14 @@ calculateCollision = function (p1, p2) {
         } else {
             cang = Math.atan((y1-y2)/(x1-x2));
         }
+        // cang = Math.round(cang*100)/100
+        console.log("CANG: ", cang*180/Math.PI);
 
         x1vf = ((x1vi*Math.cos(ang1-cang)*(m1-m2) + 2*m2*x2vi*Math.cos(ang2-cang)) / (m1+m2)) * Math.cos(cang) + x1vi*Math.sin(ang1-cang)*Math.cos(cang+Math.PI/2)
-        y1vf = ((y1vi*Math.cos(ang1-cang)*(m1-m2) + 2*m2*y2vi*Math.cos(ang2-cang)) / (m1+m2)) * Math.sin(cang) + y1vi*Math.sin(ang1-cang)*Math.sin(cang+Math.PI/2)
+        y1vf = ((y1vi*Math.cos(ang1-cang)*(m1-m2) + 2*m2*y2vi*Math.cos(ang2-cang)) / (m1+m2)) * Math.sin(cang) + y1vi*Math.cos(ang1-cang)*Math.sin(cang+Math.PI/2)
 
         x2vf = ((x2vi*Math.cos(ang2-cang)*(m2-m1) + 2*m1*x1vi*Math.cos(ang1-cang)) / (m2+m1)) * Math.cos(cang) + x2vi*Math.sin(ang2-cang)*Math.cos(cang+Math.PI/2)
-        y2vf = ((y2vi*Math.cos(ang2-cang)*(m2-m1) + 2*m1*y1vi*Math.cos(ang1-cang)) / (m2+m1)) * Math.sin(cang) + y2vi*Math.sin(ang2-cang)*Math.sin(cang+Math.PI/2)
+        y2vf = ((y2vi*Math.cos(ang2-cang)*(m2-m1) + 2*m1*y1vi*Math.cos(ang1-cang)) / (m2+m1)) * Math.sin(cang) + y2vi*Math.cos(ang2-cang)*Math.sin(cang+Math.PI/2)
         console.log("In: \n(obj1)", p1.name, x1vi, y1vi, m1, " \n(obj2)", p2.name, x2vi, y2vi, m2);
         console.log("Out: \n(obj1)", x1vf, y1vf, " \n(obj2)", x2vf, y2vf);
 
@@ -125,9 +131,6 @@ calculateCollision = function (p1, p2) {
 
         p2.setVelocity(x2vf, y2vf);
         p1.setVelocity(x1vf, y1vf);
-
-        p1.setPosition(x1, y1);
-        p2.setPosition(x2, y2)
 
         console.log(p1.pos.x, p1.pos.y);
 
@@ -157,6 +160,22 @@ function update() {
                 if (projectiles[i].name !== p.name && !checked.contains(projectiles[i])) {
                     if (comparePositions(projectiles[i], p)) {
                         console.log("Collision detected");
+
+                        let p1 = projectiles[i];
+                        let p2 = p;
+                        p2.setVelocity(-p2.vel.x, -p2.vel.y);
+                        p1.setVelocity(-p1.vel.x, -p1.vel.y);
+
+                        while (comparePositions(p1, p2)) {
+                            console.log("asdfasdfasdfasdfadsfasdfsd");
+                            p1.updatePosition();
+                            p2.updatePosition();
+                        }
+                        p1.updatePosition();
+                        p2.updatePosition();
+                        p2.setVelocity(-p2.vel.x, -p2.vel.y);
+                        p1.setVelocity(-p1.vel.x, -p1.vel.y);
+
                         calculateCollision(projectiles[i], p);
                         collidingProjectiles.push([projectiles[i], p])
                         checked.push(...[projectiles[i], p]);
