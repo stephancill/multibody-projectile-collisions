@@ -3,8 +3,8 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
     /* Projectile
     /* ----------
     */
-    this.pos = { x: x, y: y };
-    this.vel = { x: vxi, y: vyi};
+    this.pos = { x: x, y: y, initial: {x: x, y: y} };
+    this.vel = { x: vxi, y: vyi, initial: {x: vxi, y: vyi}};
     this.color = color;
     this.mass = mass;
     this.radius = radius;
@@ -12,14 +12,19 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
 
     console.log(this.name, ": ",this.pos, this.vel, this.color, this.radius);
 
+    this.setVelocityFotTime = function (t) {
+        this.vel.x = this.vel.initial.x;
+        this.vel.y = this.vel.initial.y + CONSTANTS.g * t;
+    }
+
     // Set position given time
     this.setPositionForTime = function (t) {
         // dx(t) = Vi*t + 1/2 * a * t^2
-        this.pos.x = this.vel.x * t;
-        this.pos.y = -this.vel.y * t + 1/2 * CONSTANTS.g * Math.pow(t, 2);
+        this.pos.x = this.pos.initial.x + this.vel.initial.x * t;
+        this.pos.y = this.pos.initial.y + this.vel.initial.y + CONSTANTS.g * t;
 
-        this.pos.x *= CONSTANTS.canvasScale;
-        this.pos.y *= CONSTANTS.canvasScale;
+        console.log(-this.vel.initial.y * t, 1/2 * CONSTANTS.g * Math.pow(t, 2));
+        this.setVelocityFotTime(t);
     }
 
     // Rendering
@@ -29,7 +34,7 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
         var endPoint = (Math.PI/180)*360;
         context.fillStyle = this.color;
         context.beginPath();
-        context.arc(this.pos.x, this.pos.y, this.radius, startPoint, endPoint, true);
+        context.arc(this.pos.x, -this.pos.y, this.radius, startPoint, endPoint, true);
         context.fill();
         context.closePath();
     }

@@ -1,6 +1,6 @@
 // Constants
 const CONSTANTS = {
-    g : 0,
+    g : -9.8,
     canvasScale : 0.001
 }
 
@@ -16,7 +16,7 @@ let pause = {
     paused: false
 }
 
-let projectiles = [new Projectile({x: 20, y: 280, vxi: 50, vyi: -50})]
+let projectiles = [new Projectile({x: 20, y: 280, vxi: 50, vyi: 50})]
 
 function update() {
     if (!stop) {
@@ -38,7 +38,7 @@ function update() {
 
         // Render projectiles
         projectiles.map(p => {
-            p.setPositionForTime(time);
+            p.setPositionForTime(time/1000);
             p.render(cc);
         })
     } else {
