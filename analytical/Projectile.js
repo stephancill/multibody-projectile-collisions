@@ -17,6 +17,9 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
         // dx(t) = Vi*t + 1/2 * a * t^2
         this.pos.x = this.vel.x * t;
         this.pos.y = -this.vel.y * t + 1/2 * CONSTANTS.g * Math.pow(t, 2);
+
+        this.pos.x *= CONSTANTS.canvasScale;
+        this.pos.y *= CONSTANTS.canvasScale;
     }
 
     // Rendering
@@ -26,7 +29,7 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
         var endPoint = (Math.PI/180)*360;
         context.fillStyle = this.color;
         context.beginPath();
-        context.arc(this.pos.x * CONSTANTS.canvasScale, this.pos.y * CONSTANTS.canvasScale, this.radius, startPoint, endPoint, true);
+        context.arc(this.pos.x, this.pos.y, this.radius, startPoint, endPoint, true);
         context.fill();
         context.closePath();
     }

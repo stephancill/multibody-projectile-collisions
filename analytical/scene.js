@@ -68,7 +68,7 @@ function updateLogging() {
         <br><br>
         <span>Name: ${p.name}</span>
         <br>
-        <span>Position (mx, my): ${Math.round(p.pos.x*CONSTANTS.canvasScale*100)/100}, ${Math.round(p.pos.y*CONSTANTS.canvasScale*100)/100}</span>
+        <span>Position (mx, my): ${Math.round(p.pos.x*100)/100}, ${Math.round(p.pos.y*100)/100}</span>
         <br>
         <span>Velocity (m/s): ${Math.round(p.vel.x*100)/100}, ${Math.round(p.vel.y*100)/100}</span>
         <br>
