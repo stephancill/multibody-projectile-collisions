@@ -1,7 +1,7 @@
 // Constants
 const CONSTANTS = {
     g : -9.8,
-    canvasScale : 0.001
+    canvasScale : 1
 }
 
 // Time

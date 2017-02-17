@@ -21,9 +21,8 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
     this.setPositionForTime = function (t) {
         // dx(t) = Vi*t + 1/2 * a * t^2
         this.pos.x = this.pos.initial.x + this.vel.initial.x * t;
-        this.pos.y = this.pos.initial.y + this.vel.initial.y + CONSTANTS.g * t;
-
-        console.log(-this.vel.initial.y * t, 1/2 * CONSTANTS.g * Math.pow(t, 2));
+        this.pos.y = 1/2 * -CONSTANTS.g * Math.pow(t, 2) - this.vel.initial.y * t + this.pos.initial.y;
+        console.log(this.pos.y);
         this.setVelocityFotTime(t);
     }
 
@@ -34,7 +33,7 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
         var endPoint = (Math.PI/180)*360;
         context.fillStyle = this.color;
         context.beginPath();
-        context.arc(this.pos.x, -this.pos.y, this.radius, startPoint, endPoint, true);
+        context.arc(this.pos.x*CONSTANTS.canvasScale, this.pos.y*CONSTANTS.canvasScale, this.radius*CONSTANTS.canvasScale, startPoint, endPoint, true);
         context.fill();
         context.closePath();
     }
