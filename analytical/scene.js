@@ -1,7 +1,8 @@
 // Constants
 const CONSTANTS = {
     g : -9.8,
-    canvasScale : 1
+    canvasScale : 1,
+    timeScale : 2
 }
 
 // Time
@@ -30,7 +31,7 @@ function update() {
         let newTime = new Date();
         deltaTime = newTime-lastFrame;
         lastFrame = newTime;
-        time = newTime - startTime - pause.totalStandbyTime;
+        time = (newTime - startTime - pause.totalStandbyTime) * CONSTANTS.timeScale;
 
         // Render background
         cc.fillStyle = "black";
