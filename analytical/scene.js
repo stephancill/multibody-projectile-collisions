@@ -17,7 +17,10 @@ let pause = {
     paused: false
 }
 
-let projectiles = [new Projectile({x: 20, y: 280, vxi: 50, vyi: 50})]
+let projectiles = [
+    new Projectile({x: 20, y: 280, vxi: 50, vyi: 50}),
+    new Projectile({x: 600, y: 280, vxi: -50, vyi: 50, color: "red"})
+]
 
 function update() {
     if (!stop) {
