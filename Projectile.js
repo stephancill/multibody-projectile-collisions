@@ -75,6 +75,7 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
             this.t += 1 * constants.timeScale; // Increment time
             console.log("I'm colliding");
         }
+        this.updatePosition();
         // this.setVelocity((tmpPos.x - this.pos.x)/(tmpTime-this.t)*0.1, (this.pos.y - tmpPos.y)/(tmpTime-this.t)*0.1)
 
         if (this.pos.x + this.size.width > context.canvas.width || this.pos.x - this.size.width < 0) {
@@ -96,7 +97,7 @@ function Projectile (constants, pos={x: 0, y: 0}, size={width:0, height:0, radiu
             this.setVelocity(this.vel.x, -this.vel.y)
             // this.updatePosition();
         }
-        this.updatePosition();
+
 
         // Draw
         var startPoint = (Math.PI/180)*0;
