@@ -10,6 +10,8 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
     this.radius = radius;
     this.name = name;
 
+    this.collisionTime = calculateCollisionTime({a: CONSTANTS.g, Vi: this.vel.initial.y, Pd: -this.pos.initial.y, Pi: this.pos.initial.y});
+    console.log(this.collisionTime);
     this.setVelocityFotTime = function (t) {
         this.vel.x = this.vel.initial.x;
         this.vel.y = this.vel.initial.y + CONSTANTS.g * t;

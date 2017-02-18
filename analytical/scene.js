@@ -18,9 +18,36 @@ let pause = {
 }
 
 let projectiles = [
-    new Projectile({x: 20, y: 280, vxi: 50, vyi: 50}),
-    new Projectile({x: 600, y: 280, vxi: -50, vyi: 50, color: "red"})
+    new Projectile({x: 20, y: 280, vxi: 50, vyi: 100})
+    // new Projectile({x: 600, y: 280, vxi: -50, vyi: 50, color: "red"})
 ]
+
+function calculateCollisionTime({a, Vi, Pd, Pi}) {
+    /*
+    Quadratic equation
+        a = accelleration
+        Vi = initial velocity
+        Pd = position delta
+        Pi = position initial
+    */
+    console.warn("calculateCollisionTime");
+    this.a = 1/2 * a;
+    this.b = Vi;
+    this.c = -(Pd + Pi);
+
+    let descriminant = Math.pow(Math.pow(this.b, 2) - 4*this.a*this.c, 0.5);
+    if (descriminant >= 0) {
+        let x1 = (-this.b + descriminant)/(2*this.a);
+        let x2 = (-this.b - descriminant)/(2*this.a);
+        if (x1 > 0) {
+            return x1;
+        } else {
+            return x2;
+        }
+    } else {
+        return null;
+    }
+}
 
 function update() {
     if (!stop) {
