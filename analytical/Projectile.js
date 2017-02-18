@@ -10,18 +10,34 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
     this.radius = radius;
     this.name = name;
 
-    this.setVelocityFotTime = function (t) {
+    this.setVelocityFotTime = function (time) {
+        let t = time;
         this.vel.x = this.vel.initial.x;
         this.vel.y = this.vel.initial.y + CONSTANTS.g * t;
     }
 
     // Set position given time
-    this.setPositionForTime = function (t) {
+    this.setPositionForTime = function (time) {
         // dx(t) = Vi*t + 1/2 * a * t^2
+        let t = time;
         this.pos.x = this.pos.initial.x + this.vel.initial.x * t;
         this.pos.y = 1/2 * -CONSTANTS.g * Math.pow(t, 2) - this.vel.initial.y * t + this.pos.initial.y;
 
         this.setVelocityFotTime(t);
+    }
+
+    this.setInitialVelocity = function (vxi, vyi) {
+        this.vel.initial.x = vxi;
+        this.vel.initial.y = vyi;
+    }
+    this.setInitialPosition = function (x, y) {
+        this.pos.initial.x = x;
+        this.pos.initial.y = y;
+    }
+
+    this.captureAsInitialConditions = function () {
+        this.setInitialPosition(this.pos.x, this.pos.y);
+        this.setInitialVelocity(this.vel.x, this.vel.y);
     }
 
     // Rendering
