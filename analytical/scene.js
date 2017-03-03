@@ -25,8 +25,8 @@ let nextCollision = {t: null, p: null};
 let calculateCollisions = true;
 
 let projectiles = [
-    // new Projectile({x: 600, y: 280, vxi: 10, vyi: 100, color: "red"}),
-    new Projectile({x: 30, y: 180, vxi: 100, vyi: 100})
+    new Projectile({x: 600, y: 280, vxi: 10, vyi: 100, color: "red"}),
+    new Projectile({x: 30, y: 180, vxi: 50, vyi: 25})
 ]
 
 function calculateCollisionTime(p, c) {
@@ -66,12 +66,12 @@ function calculateCollisionTime(p, c) {
     }
     // this.collisions.push({t: eq.solveLinear({y: c.width-p.radius, m: p.vel.initial.x, c: p.pos.initial.x}), p: p, axis: "x"});
     // this.collisions.push({t: eq.solveLinear({y: 0+p.radius, m: p.vel.initial.x, c: p.pos.initial.x}), p: p, axis: "x"});
-    console.table(this.collisions);
     this.collisions.map(c => {
-        if (c.t != null) {
+        if (c.t != null && c.t > 0) {
             collisions.push(c);
         }
     })
+    pause.totalStandbyTime = 0;
 }
 
 function collide(collision) {
@@ -79,15 +79,12 @@ function collide(collision) {
     let p = collision.p;
     let t = collision.t;
 
-    // Set global time
-    time = 0;
-    startTime = new Date();
-
     // Update projectile position precisely
     p.setPositionForTime(t);
 
-    // Update last collision time
-    p.timeOfLastCollision = t;
+    // Set global time
+    time = 0;
+    // startTime = new Date();
 
     // Change projectile initial conditions
     projectiles.map(tmp => {tmp.captureAsInitialConditions()});
@@ -103,6 +100,7 @@ function collide(collision) {
     calculateCollisions = true;
     nextCollision = {t: null, p: null};
     collisions = [];
+    // stop = true;
 }
 
 function update() {
@@ -117,7 +115,9 @@ function update() {
         let newTime = new Date();
         deltaTime = newTime-lastFrame;
         lastFrame = newTime;
-        time = (newTime - startTime - pause.totalStandbyTime) * CONSTANTS.timeScale / 1000; // Time in seconds
+        // time = (newTime - startTime - pause.totalStandbyTime) * CONSTANTS.timeScale / 1000; // Time in seconds
+        time += deltaTime * CONSTANTS.timeScale / 1000;
+        // console.log(time, " :: ", newTime, startTime, pause.totalStandbyTime);
         if (time >= nextCollision.t && nextCollision.t != null) {
             collide(nextCollision)
         }
@@ -136,9 +136,11 @@ function update() {
             }
         });
         if (calculateCollisions) {
-            // Remove nil collisions
-            collisions = collisions.sort(function(a, b) {  return a.t - b.t;}); // Remove nil
-            nextCollision = collisions[0];
+            // Sort collisions
+            collisions = collisions.sort(function(a, b) {  return a.t - b.t;});
+            if (collisions.length > 0) {
+                nextCollision = collisions[0];
+            }
             calculateCollisions = false;
             console.table(collisions);
             console.warn("Next collision: ", nextCollision.t);
