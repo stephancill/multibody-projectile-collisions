@@ -105,16 +105,19 @@ function collide(collision) {
 
 function update() {
     if (!stop) {
+        // Time calculation
+        let newTime = new Date();
+
+
         // Reset pause
         if (pause.paused) {
             pause.paused = false;
             pause.totalStandbyTime += pause.standbyTime;
+            lastFrame = newTime;
         }
-
-        // Time calculation
-        let newTime = new Date();
         deltaTime = newTime-lastFrame;
         lastFrame = newTime;
+
         // time = (newTime - startTime - pause.totalStandbyTime) * CONSTANTS.timeScale / 1000; // Time in seconds
         time += deltaTime * CONSTANTS.timeScale / 1000;
         // console.log(time, " :: ", newTime, startTime, pause.totalStandbyTime);
