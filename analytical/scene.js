@@ -24,10 +24,29 @@ let collisions = [];
 let nextCollision = {t: null, p: null};
 let calculateCollisions = true;
 
-let projectiles = [
-    new Projectile({x: 600, y: 280, vxi: 10, vyi: 100, color: "red"}),
-    new Projectile({x: 30, y: 180, vxi: 50, vyi: 25})
+var projectiles = [
+    // new Projectile({x: 600, y: 280, vxi: 50, vyi: 50, color: "red"}),
+    // new Projectile({x: 30, y: 180, vxi: 50, vyi: 25})
 ]
+
+function addProjectile() {
+    var px = Number(document.getElementById("inputPosX").value)
+    var py = Number(document.getElementById("inputPosY").value)
+    var vx = Number(document.getElementById("inputVelX").value)
+    var vy = Number(document.getElementById("inputVelY").value)
+    var color = document.getElementById("inputColor").value
+    console.log(px, py, vx, vy, color);
+    projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
+
+    projectiles.map(p => {
+        p.captureAsInitialConditions()
+    })
+
+    time = 0
+
+    render()
+    updateLogging(force=true)
+}
 
 function calculateCollisionTime(p, c) {
     /*
@@ -79,8 +98,9 @@ function collide(collision) {
     let p = collision.p;
     let t = collision.t;
 
+    time = t
     // Update projectile position precisely
-    p.setPositionForTime(t);
+    // p.setPositionForTime(t); // causes problems
 
     // Set global time
     time = 0;
@@ -100,6 +120,7 @@ function collide(collision) {
     calculateCollisions = true;
     nextCollision = {t: null, p: null};
     collisions = [];
+    // stop = true
 }
 
 function update() {
@@ -125,8 +146,7 @@ function update() {
         }
 
         // Render background
-        cc.fillStyle = "black";
-        cc.fillRect(0, 0, c.width, c.height);
+        render()
 
         // Render projectiles
         projectiles.map(p => {
@@ -147,7 +167,7 @@ function update() {
             console.table(collisions);
             console.warn("Next collision: ", nextCollision.t);
         }
-
+        // stop = true
     } else {
         // Paused
         if (!pause.paused) {
@@ -162,7 +182,18 @@ function update() {
     updateLogging();
 }
 
-function updateLogging() {
+function render() {
+    // Render background
+    cc.fillStyle = "black";
+    cc.fillRect(0, 0, c.width, c.height);
+
+    // Render projectiles
+    projectiles.map(p => {
+        p.render(cc);
+    });
+}
+
+function updateLogging(force=false) {
     document.getElementById("time").innerHTML = `
         Frame delta: ${deltaTime}ms
         <br>
@@ -170,7 +201,7 @@ function updateLogging() {
     `;
 
     let projectileLog = ""
-    if (!stop) {
+    if (!stop || force) {
         projectiles.map(p => {
             projectileLog += `
             <br><br>

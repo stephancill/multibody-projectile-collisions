@@ -6,11 +6,35 @@
     </head>
     <body>
         <canvas id="canvas" width="1000" height="400"></canvas>
+        <br>
+        <button id="stop"type="button" name="button">Start</button>
+        <form id="newProjectileForm" onsubmit="return false">
+            <span><strong>Add projectile:</strong></span>
+            <br><br>
+            <span>Position (initial)</span><button onclick="selectPosition=true;" type="button" name="button">Click for pos</button>
+            <br>
+            <span>  x: </span><input id="inputPosX" style="width:75px" type="number" name="" value="600">
+            <span>  y: </span><input id="inputPosY" style="width:75px" type="number" name="" value="280">
+            <br>
+            <span>Velocity (initial)</span>
+            <br>
+            <span>  x: </span><input id="inputVelX" style="width:75px" type="number" name="" value="0">
+            <span>  y: </span><input id="inputVelY" style="width:75px" type="number" name="" value="0">
+            <br>
+            <select class="" id="inputColor">
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+            </select>
+            <button id="addProjectileButton" type="submit" name="button">Add</button>
+            <br>
+            <br>
+        </form>
         <div id="logging" class="logging">
             <span id="time">0ms</span>
             <div id="projectiles" class=""></div>
         </div>
-        <button id="stop"type="button" name="button">Pause</button>
+
     </body>
 </html>
 <!-- Dependencies -->
@@ -22,16 +46,51 @@
 
 <!-- Canvas controller -->
 <script type="text/javascript">
-let stop = false;
+var stop = true
+var selectPosition = false
+var started = false
+var rect = null
 
 function togglePause() {
     stop = !stop;
     stop ? this.innerHTML = "Play" : this.innerHTML = "Pause";
+    if (!started) {
+        document.getElementById("newProjectileForm").enabled = false
+    }
+    started = true
 }
 window.onload = function () {
     c = document.getElementById("canvas");
     cc = c.getContext("2d");
     setInterval(update, 1000/60);
+    render()
+
+    // Set form min/max values
+    rect = c.getBoundingClientRect();
+    document.getElementById("inputPosX").min = 0
+    document.getElementById("inputPosX").max = rect.right
+    document.getElementById("inputPosY").min = 0
+    document.getElementById("inputPosY").max = rect.bottom
 }
+
+canvas.addEventListener('click', function(evt) {
+    if (selectPosition) {
+        var rect = c.getBoundingClientRect();
+        mousePos = {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
+        document.getElementById("inputPosX").value = mousePos.x
+        document.getElementById("inputPosY").value = mousePos.y
+        addProjectile()
+
+        console.log(mousePos);
+    }
+    selectPosition = false
+});
+
+// Form events
 document.getElementById("stop").addEventListener("click", togglePause)
+document.getElementById("addProjectileButton").addEventListener("click", addProjectile)
+
 </script>

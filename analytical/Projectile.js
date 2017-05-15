@@ -11,6 +11,8 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
     this.radius = radius;
     this.name = name;
 
+    console.log(`New ${this.color} projectile at ${this.pos.x}, ${this.pos.y} with velocity ${this.vel.x}, ${this.vel.y}`);
+
     this.setVelocityFotTime = function (time) {
         let t = time;
         this.vel.x = this.vel.initial.x;
@@ -37,8 +39,24 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="U
     }
 
     this.captureAsInitialConditions = function () {
+        this.resetPositionWithinBounds()
         this.setInitialPosition(this.pos.x, this.pos.y);
         this.setInitialVelocity(this.vel.x, this.vel.y);
+    }
+
+    this.resetPositionWithinBounds = function() {
+        if (this.pos.x > rect.right-this.radius) {
+            console.log("x > rect.right-this.radius");
+            this.pos.x = rect.right-this.radius
+        } else if (this.pos.x < this.radius) {
+            console.log("x < this.position.radius");
+            this.pos.x = this.radius
+        }
+        if (this.pos.y > rect.bottom-this.radius) {
+            this.pos.y = rect.bottom-this.radius
+        } else if (this.pos.y < this.radius) {
+            this.pos.y = this.radius
+        }
     }
 
     // Rendering
