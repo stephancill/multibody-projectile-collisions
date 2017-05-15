@@ -100,7 +100,6 @@ function collide(collision) {
     calculateCollisions = true;
     nextCollision = {t: null, p: null};
     collisions = [];
-    // stop = true;
 }
 
 function update() {
@@ -171,17 +170,20 @@ function updateLogging() {
     `;
 
     let projectileLog = ""
-    projectiles.map(p => {
-        projectileLog += `
-        <br><br>
-        <span>Name: ${p.name}</span>
-        <br>
-        <span>Position (mx, my): ${Math.round(p.pos.x*100)/100}, ${Math.round(p.pos.y*100)/100}</span>
-        <br>
-        <span>Velocity (m/s): ${Math.round(p.vel.x*100)/100}, ${Math.round(p.vel.y*100)/100}</span>
-        <br>
-        <span>Colliding: ${p.colliding}</span>
-        `
-    });
-    document.getElementById("projectiles").innerHTML = projectileLog;
+    if (!stop) {
+        projectiles.map(p => {
+            projectileLog += `
+            <br><br>
+            <span>Name: ${p.name}</span>
+            <br>
+            <span>Position (mx, my): ${Math.round(p.pos.x*100)/100}, ${Math.round(p.pos.y*100)/100}</span>
+            <br>
+            <span>Velocity (m/s): ${Math.round(p.vel.x*100)/100}, ${Math.round(p.vel.y*100)/100}</span>
+            <br>
+            <span>Colliding: ${p.colliding}</span>
+            `
+        });
+        document.getElementById("projectiles").innerHTML = projectileLog;
+    }
+
 }

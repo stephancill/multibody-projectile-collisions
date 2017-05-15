@@ -23,13 +23,15 @@
 <!-- Canvas controller -->
 <script type="text/javascript">
 let stop = false;
+
+function togglePause() {
+    stop = !stop;
+    stop ? this.innerHTML = "Play" : this.innerHTML = "Pause";
+}
 window.onload = function () {
     c = document.getElementById("canvas");
     cc = c.getContext("2d");
     setInterval(update, 1000/60);
 }
-document.getElementById("stop").addEventListener("click", function () {
-    stop = !stop;
-    stop ? this.innerHTML = "Play" : this.innerHTML = "Pause";
-})
+document.getElementById("stop").addEventListener("click", togglePause)
 </script>

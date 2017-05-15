@@ -1,7 +1,8 @@
 function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="Untitled Projectile"}) {
-    /* ----------
-    /* Projectile
-    /* ----------
+    /*
+    *  ----------
+    *  Projectile
+    *  ----------
     */
     this.pos = { x: x, y: y, initial: {x: x, y: y} };
     this.vel = { x: vxi, y: vyi, initial: {x: vxi, y: vyi}};
