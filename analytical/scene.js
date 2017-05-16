@@ -25,8 +25,8 @@ let nextCollision = {t: null, p: null};
 let calculateCollisions = true;
 
 var projectiles = [
-    // new Projectile({x: 600, y: 280, vxi: 50, vyi: 50, color: "red"}),
-    // new Projectile({x: 30, y: 180, vxi: 50, vyi: 25})
+    new Projectile({x: 600, y: 280, vxi: 50, vyi: 50, color: "red", name: "Projectile 1"}),
+    new Projectile({x: 30, y: 180, vxi: 50, vyi: 25, name: "Projectile 2"})
 ]
 
 function addProjectile() {
@@ -56,18 +56,18 @@ function calculateCollisionTime(p, c) {
     this.collisions = []
     // y conditions (top, bottom)
     if (Math.abs(1/2 * CONSTANTS.g) > 0) {
-        this.collisions.push({t: eq.solveQuadratic({a: 1/2 * CONSTANTS.g, b: p.vel.initial.y, c: -(p.pos.initial.y - c.height + p.radius)}), p: p, axis: "y"});
-        this.collisions.push({t: eq.solveQuadratic({a: 1/2 * CONSTANTS.g, b: p.vel.initial.y, c: -p.pos.initial.y + p.radius}), p: p, axis: "y"});
+        this.collisions.push({t: eq.solveQuadratic({a: 1/2 * CONSTANTS.g, b: p.vel.initial.y, c: -(p.pos.initial.y - c.height + p.radius)}), p: p, axis: "x"});
+        this.collisions.push({t: eq.solveQuadratic({a: 1/2 * CONSTANTS.g, b: p.vel.initial.y, c: -p.pos.initial.y + p.radius}), p: p, axis: "x"});
     } else {
         // a = 0
         if (p.vel.initial.y != 0) {
             let t1 = (0-p.pos.initial.y+p.radius)/p.vel.initial.y;
             let t2 = (c.height-p.pos.initial.y-p.radius)/p.vel.initial.y;
             if (t1 > 0) {
-                this.collisions.push({t: t1, p: p, axis: "y"});
+                this.collisions.push({t: t1, p: p, axis: "x"});
             }
             if (t2 > 0) {
-                this.collisions.push({t: t2, p: p, axis: "y"});
+                this.collisions.push({t: t2, p: p, axis: "x"});
             }
         }
     }
@@ -77,10 +77,10 @@ function calculateCollisionTime(p, c) {
         let t1 = (0-p.pos.initial.x+p.radius)/p.vel.initial.x;
         let t2 = (c.width-p.pos.initial.x-p.radius)/p.vel.initial.x;
         if (t1 > 0) {
-            this.collisions.push({t: t1, p: p, axis: "x"});
+            this.collisions.push({t: t1, p: p, axis: "y"});
         }
         if (t2 > 0) {
-            this.collisions.push({t: t2, p: p, axis: "x"});
+            this.collisions.push({t: t2, p: p, axis: "y"});
         }
     }
     // this.collisions.push({t: eq.solveLinear({y: c.width-p.radius, m: p.vel.initial.x, c: p.pos.initial.x}), p: p, axis: "x"});
@@ -100,7 +100,8 @@ function collide(collision) {
 
     time = t
     // Update projectile position precisely
-    // p.setPositionForTime(t); // causes problems
+    p.setPositionForTime(t); // causes problems
+    console.error(p.name,"pos:", p.pos, "vel:", p.vel, t);
 
     // Set global time
     time = 0;
@@ -120,7 +121,7 @@ function collide(collision) {
     calculateCollisions = true;
     nextCollision = {t: null, p: null};
     collisions = [];
-    // stop = true
+    stop = true
 }
 
 function update() {
