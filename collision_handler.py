@@ -11,18 +11,25 @@ def solveQuad(a,b,c):
 	if a == 0:
 		if b == 0:
 			if c == 0:
-				return []
+				return None
 			else:
-				return []
+				return None
 		else:
-			return [-c/b]
+			if -c/b >= 0:
+				return -c/b
+			else:
+				return None
 	else:
 		if b**2-4*a*c < 0:
-			return []
+			return None
 		elif b**2-4*a*c == 0:
-			return [-b/(2*a)]
+			return -b/(2*a)
 		else:
-			return [(-b+(b**2-4*a*c)**0.5)/(2*a),(-b-(b**2-4*a*c)**0.5)/(2*a)]
+			times = [x for x in [(-b+(b**2-4*a*c)**0.5)/(2*a),(-b-(b**2-4*a*c)**0.5)/(2*a)] if x >= 0]
+			if times != []:
+				return min(times)
+			else:
+				return None
 
 #finds the time of collision if there is a collision
 
@@ -37,13 +44,12 @@ def timeUntilCollision(p1, p2):
 	b = 2*X*VX + 2*Y*VY
 	c = X**2 + Y**2 - Rtot**2
 
-	times = [x for x in solveQuad(a,b,c) if x >= 0]
+	t = solveQuad(a,b,c)
 	# times += wallColl(projs, 500, 500)
 
-	if len(times) == 0:
+	if t == None:
 		return None
 	else:
-		t = min([x for x in times if x])
 		dist = (X + p1["vx"] * (t+10**-4) - p2["vx"] * (t+10**-4))**2 + (Y + p1["vy"] * (t+10**-4) - p2["vy"] * (t+10**-4))**2
 		#this is to check if they collide by simulating their positions 10**-4 s after "collision"
 		if dist < (p1["r"]+p2["r"])**2:
@@ -53,14 +59,14 @@ def timeUntilCollision(p1, p2):
 
 
 #Takes objects which are touching/colliding (does not simulate till point of collision)
-def resolveCollision(p1, p2, wall=None):
-	if wall:
-		return {
-			"x": (-p1["vx"], p1["vy"]),
-			"y": (p1["vx"], -p1["vy"])
-		}[wall]
+def resolveCollision(p1, p2, wall):
+	if wall != None:
+		# print('wall coll')
+		if wall == 'x':
+			return (-p1["vx"], p1["vy"])
+		else:
+			return (p1["vx"], -p1["vy"])
 	
-	a = 0
 	if p1["x"] == p2["x"]:
 		a = 0
 	else:
@@ -85,58 +91,97 @@ def resolveCollision(p1, p2, wall=None):
 
 	newvx2 = yu2*math.sin(a)+u2*math.cos(a)
 	newvy2 = yu2*math.cos(a)+u2*math.sin(a)
-
+	# print (newvx1, newvy1, newvx2, newvy2,'proj coll')
 	return (newvx1, newvy1, newvx2, newvy2)
 
 # Example of updating the shits
 # proj1["vx"], proj1["vy"], proj2["vx"], proj2["vy"] = resolveCollision(proj1 , proj2)
 
 def minTime(projectiles):
-	colliding_objects = [0, 1]
-	time_col = timeUntilCollision(projectiles[0], projectiles[1])
+	colliding_objects = None
+	time_col = None
+	
 	for i in range(len(projectiles)-1):
 		for j in range(i+1,len(projectiles)):
 			time_new = timeUntilCollision(projectiles[i], projectiles[j])
-			if time_new < time_col:
-				time_col = time_new
-				colliding_objects = [i,j]
-	return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
+			if time_new != None:	
+				if time_col != None:	
+					if time_new < time_col:
+						time_col = time_new
+						colliding_objects = [i,j]
+				else:
+					time_col = time_new
+					colliding_objects = [i,j]
+					
+	if time_col != None:
+		return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
+	else:
+		return (None, None, None)
 
 def wallColl(projectiles, height, width):
 	#l/r walls
 	time_col = None
+	colliding_proj = None
+	colliding_wall = None
 	for i in range(len(projectiles)):
 		proj = projectiles[i]
 		if proj["vx"] > 0:
-			if solveQuad(0, proj["vx"], proj["r"] + proj["x"] - width)[0] >= 0:
-				time_new = solveQuad(0,proj["vx"],proj["r"]+proj["x"]-width)[0]
-				if (time_col == None) or (time_new < time_col):
+			time_new = (proj["r"]+proj["x"]-width)/-proj["vx"]
+			if time_new != None:
+				if time_col != None:
+					if time_new < time_col:
+						time_col = time_new
+						colliding_proj = i
+						colliding_wall = 'x'
+				else:
 					time_col = time_new
 					colliding_proj = i
 					colliding_wall = 'x'
+		
 		elif proj["vx"]<0:
-			if (solveQuad(0,proj["vx"],-proj["r"]+proj["x"]))[0] >= 0:
-				time_new = (solveQuad(0,proj["vx"],-proj["r"]+proj["x"])[0])
-				if (time_col == None) or (time_new < time_col):
+			time_new = -(-proj["r"]+proj["x"])/proj["vx"]
+			if time_new != None:
+				if time_col != None:
+					if time_new < time_col:
+						time_col = time_new
+						colliding_proj = i
+						colliding_wall = 'x'
+				else:
 					time_col = time_new
 					colliding_proj = i
 					colliding_wall = 'x'
 
 		if proj["vy"] > 0:
-			time_new = min([(x) for x in (solveQuad(0.5*g,proj["vy"],proj["r"]+proj["y"]-heigth)) if x >= 0 ])
-			if (time_col == None) or (time_new < time_col):
-				time_col = time_new
-				colliding_proj = i
-				colliding_wall = 'y'
-		if (proj["y"]!=0) and (proj["vy"]!=0):
-			time_new = min([(x) for x in (solveQuad(0.5*g,proj["vy"],-proj["r"]+proj["y"])) if x >=0 ])
-
-			if (time_col == None) or (time_new < time_col):
-				time_col = time_new
-				colliding_proj = i
-				colliding_wall = 'y'
-
-		return (time_col, [colliding_proj], colliding_wall)
+			time_new = solveQuad(0.5*g,proj["vy"],proj["r"]+proj["y"]-heigth)
+			if time_new != None:
+				if time_col != None:
+					if (time_new < time_col):
+						time_col = time_new
+						colliding_proj = i
+						colliding_wall = 'y'
+				else:
+					time_col = time_new
+					colliding_proj = i
+					colliding_wall = 'y'
+		
+		if ((proj["y"]-proj["r"])!=0) and (proj["vy"]!=0):
+			time_new = solveQuad(0.5*g,proj["vy"],-proj["r"]+proj["y"])
+			if time_new != None:
+				if time_col!= None:
+					if (time_new < time_col):
+						time_col = time_new
+						colliding_proj = i
+						colliding_wall = 'y'
+				else:
+					time_col = time_new
+					colliding_proj = i
+					colliding_wall = 'y'
+		
+	print(time_col)
+	if time_col != None:	
+		return (time_col ,projectiles[colliding_proj], colliding_wall)
+	else:
+		return (None, None, None)
 
 def componentsFromAngle(a,x):
 	vx = math.cos(a)*x
@@ -156,7 +201,7 @@ if __name__ == "__main__":
 	proj2 = {
 		"x": 20,
 		"y": 5,
-		"vx": -5,
+		"vx": -1,
 		"vy": 0,
 		"r": 5,
 		"m": 10
@@ -164,24 +209,38 @@ if __name__ == "__main__":
 	
 	projs = [proj1, proj2]
 
-	[print(x) for x in projs]
+	# [print(x) for x in projs]
 
 	for _ in range(10):
 		# 1. Calculate time of next collision (TODO: include walls)
-		time, projectiles, wall = min(minTime(projs), wallColl(projs, 500, 500), key=lambda x: x[0])
-		print(time, projectiles, wall)
-
+		
+		# wall = None
+		# wall_time, wall = wallColl(projs,500,500)
+		time, projectiles, wall = min(minTime(projs), wallColl(projs,500,500), key=lambda x: x[0])
+		
+		# if time != None:
+		# 	if time > wall_time:
+		# 		time, projectiles = wall_time,wallFunc[1]
+		# 		wall = wallFunc[2]
+		# else:
+		# 	time, projectiles = wall_time,wallFunc[1]
+		# 	wall = wallFunc[2]
+		
 		# 2. Update pos/vel as a function of time (to time of collision)
 		for proj in projs:
 			proj["x"] = proj["vx"]*time + 0.5*proj["vx"]*time*time
-			proj["y"] = proj["vy"]*time + 0.5*-9.8*time*time
+			if (proj["y"] - proj["r"] != 0) and (proj["vy"] != 0):
+				proj["y"] = proj["vy"]*time + 0.5*-9.8*time*time
+				proj["vy"] = proj["vy"] + time*-9.8
 		
 		# 3. Resolve collision
 		# 4. Update colliding projectiles pos/vel
 		if len(projectiles) == 2:
-			projectiles[0]["vx"], projectiles[0]["vy"], projectiles[1]["vx"], projectiles[1]["vy"] = resolveCollision(projectiles[0], projectiles[1])
+			projectiles[0]["vx"], projectiles[0]["vy"], projectiles[1]["vx"], projectiles[1]["vy"] = resolveCollision(projectiles[0], projectiles[1], None)
 		elif len(projectiles) == 1:
-			projectiles[0]["vx"], projectiles[0]["vy"] = resolveCollision(projectiles[0], None, wall=wall)
+			projectiles[0]["vx"], projectiles[0]["vy"] = resolveCollision(projectiles[0], None, wall)
 	
-		[print(x) for x in projectiles]
+		[print(i, p["x"], p["y"]) for i, p in enumerate(projs)]
+		
 		# 5. Step 1
+	
