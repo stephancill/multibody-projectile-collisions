@@ -1,24 +1,34 @@
 function Equations() {
-    this.solveQuadratic = function({a, b, c}) {
-        /*
-        Quadratic equation
-        returns positive x or null
-        */
-
-        let descriminant = Math.pow(Math.pow(b, 2) - 4*a*c, 0.5);
-        if (descriminant >= 0) {
-            let x1 = (-b + descriminant)/(2*a);
-            let x2 = (-b - descriminant)/(2*a);
-            if (x1 > 0) {
-                return x1;
-            } else if (x2 > 0) {
-                return x2;
-            } else {
-                return 0;
+    this.solveQuadratic = solveQuad(a, b, c) {
+        if (a == 0) {
+            if (b == 0) {
+                if (c == 0) {
+                    return null
+                } else {
+                    return null
+                }
+            } else{
+                if (-c/b >= 0) {
+                    return -c/b
+                } else { 
+                    return null
+                }
             }
-            console.log(x1, x2);
-        } else {
-            return null;
+        }
+        else {
+            if (Math.pow(b, 2)-4*a*c < 0) {
+                return null
+            } else if (Math.pow(b, 2)-4*a*c == 0) {
+                return -b/(2*a)
+            } else {
+                var times = [(-b+Math.pow((Math.pow(b, 2)-4*a*c),0.5))/(2*a),(-b-Math.pow((Math.pow(b, 2)-4*a*c),0.5))/(2*a)].filter(function (x) { return x >= 0 } )
+                if (times.length > 0) {
+                    return Math.min(...times)
+                } else {
+                    return null
+                }
+                    
+            }
         }
     }
 }
