@@ -101,7 +101,7 @@ function timeUntilCollision(p1, p2) {
     X = p1.pos.x - p2.pos.x
 	Y = p1.pos.y - p2.pos.y
 	VX = p1.vel.x - p2.vel.x
-	VY = p2.vel.y - p2.vel.y
+	VY = p1.vel.y - p2.vel.y
 	Rtot = p1.radius + p2.radius
 
 	a = Math.pow(VX,2) + Math.pow(VY,2)
