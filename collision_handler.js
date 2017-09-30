@@ -1,4 +1,4 @@
-function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=20, name="Untitled Projectile"}) {
+function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Untitled Projectile"}) {
     /*
     *  ----------
     *  Projectile
@@ -106,9 +106,7 @@ function timeUntilCollision(p1, p2) {
 
 	a = Math.pow(VX,2) + Math.pow(VY,2)
 	b = 2*X*VX + 2*Y*VY
-	c = Math.pow(X,2) + Math.pow(Y,2) - Math.pow(Rtot,2)
-
-    console.log(a, b, c);
+    c = Math.pow(X,2) + Math.pow(Y,2) - Math.pow(Rtot,2)
 
 	t = solveQuad(a,b,c)
 
@@ -169,43 +167,132 @@ function resolveCollision(p1, p2, wall) {
     return [newvx1, newvy1, newvx2, newvy2]
 }
 
+// TODO: Implement rest of python functions
+
+function wallCol(projectiles, height, width) {
+    var time_col, colliding_wall, colliding_proj, time_new
+    for (var i = 0; i < projectiles.length; i++) {
+        var proj = projectiles[i]
+        if (proj.vel.x > 0) {
+            time_new = (proj.radius + proj.pos.x - width)/-proj.vel.x
+            if (time_new) {
+                if (time_col) {
+                    if (time_new < time_col) {
+                        time_col = time_new
+                        colliding_proj = i
+                        colliding_wall = "x"
+                    }
+                } else {
+                    time_col = time_new
+                    colliding_proj = i
+                    colliding_wall = 'x'
+                }
+            }
+        } else if (proj.vel.x < 0) {
+            time_new = -(-proj.radius+proj.pos.x)/proj.vel.x
+            if (time_new) {
+                if (time_col) {
+                    if (time_new < time_col) {
+                        time_col = time_new
+                        colliding_proj = i
+                        colliding_wall = 'x'
+                    }
+                }else {
+                    time_col = time_new
+                    colliding_proj = i
+                    colliding_wall = 'x'
+                }
+            }
+        }
+
+        if (proj.vel.y > 0) {
+            time_new = solveQuad(0.5*-9.8,proj.vel.y,proj.radius+proj.pos.y-height)
+            if (time_new) {
+                if (time_col) {
+                    if (time_new < time_col) {
+                        time_col = time_new
+                        colliding_proj = i
+                        colliding_wall = 'y'
+                    }
+                } else {
+                    time_col = time_new
+                    colliding_proj = i
+                    colliding_wall = 'y'
+                }
+            }
+        }
+
+        if (((proj.pos.y-proj.radius)!=0) && (proj.vel.y!=0)) {
+            time_new = solveQuad(0.5*g,proj.vel.y,-proj.radius+proj.pos.y)
+            if (time_new) {
+                if (time_col) {
+                    if (time_new < time_col) {
+                        time_col = time_new
+                        colliding_proj = i
+                        colliding_wall = 'y'
+                    }
+                } else {
+                    time_col = time_new
+                    colliding_proj = i
+                    colliding_wall = 'y'
+                }
+            }
+        }
+    }
+
+    if (time_col) {
+        return [time_col, projectiles[colliding_proj], colliding_wall]
+    } else {
+        return [null, null, null]
+    }
+}
+
+function minTime(projectiles) {
+    var colliding_objects, time_col
+    for(var i = 0; i < projectiles.length-1; i++) {
+        for (var j = i+1; j < projectiles.length; j++){
+            time_new = timeUntilCollision(projectiles[i], projectiles[j])
+            if (time_new) {
+                if (time_col) {
+                    if (time_new < time_col)
+                        time_col = time_new
+                        colliding_objects = [i,j]
+                } else {
+                    time_col = time_new
+                    colliding_objects = [i,j]
+                }
+            }
+        }
+    }
+    if (time_col) {
+        return [time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), null]      
+    } else {
+        return [null, null, null]
+    }
+    
+}
 
 var p1 = new Projectile({x: 5, y: 5, vxi: 1, vyi: 0, color: "red"})
-var p2 = new Projectile({x: 20, y: 5, vxi: -1, vyi: 0, color: "red"})
+var p2 = new Projectile({x: 20, y: 5, vxi: -2, vyi: 0, color: "red"})
 
 var projs = [p1, p2]
 
-// TODO: Fix
-var t = timeUntilCollision(p1,p2)
+var t, pr, wall
 
-console.log(t);
-console.log(p1.vel, p2.vel);
-projs.map(function(p) {
-    p.setPositionForTime(t)
-    p.setVelocityForTime(t)
-})
-console.log("Pos", p1.pos, p2.pos);
+console.log('\n');
 
-resolveCollision(p1, p2, null)
-console.log(p1.vel, p2.vel);
+for(var i = 0; i < 10; i++) {
+    [t, pr, wall] = [wallCol(projs, 200, 400), minTime(projs)].sort(function(a, b) {return a[0] < b[0]})[0]
+    
+    console.log("Time until next collision: ", t, wall);
+    console.log("Velocities: ", p1.vel, p2.vel);
+    projs.map(function(p) {
+        p.setPositionForTime(t)
+        p.setVelocityForTime(t)
+    })
+    console.log("Positions at collision time: ", p1.pos, p2.pos);
+    console.log('\n');
+    
+    resolveCollision(p1, p2, null)
+}
 
-// def minTime(projectiles):
-// colliding_objects = None
-// time_col = None
-
-// for i in range(len(projectiles)-1):
-//     for j in range(i+1,len(projectiles)):
-//         time_new = timeUntilCollision(projectiles[i], projectiles[j])
-//         if time_new != None:	
-//             if time_col != None:	
-//                 if time_new < time_col:
-//                     time_col = time_new
-//                     colliding_objects = [i,j]
-//             else:
-//                 time_col = time_new
-//                 colliding_objects = [i,j]
-                
-// if time_col != None:
-//     return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
-// else:
-//     return (None, None, None)
