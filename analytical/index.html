@@ -7,10 +7,11 @@
     <body>
         <canvas id="canvas" width="1000" height="400"></canvas>
         <br>
-        <button id="stop"type="button" name="button">Start</button>
+        <button id="start"type="button" name="button">Start</button>
         <form id="newProjectileForm" onsubmit="return false">
+            <br>
             <span><strong>Add projectile:</strong></span>
-            <br><br>
+            <br>
             <span>Position (initial)</span><button onclick="selectPosition=true;" type="button" name="button">Click for pos</button>
             <br>
             <span>  x: </span><input id="inputPosX" style="width:75px" type="number" name="" value="600">
@@ -38,15 +39,16 @@
     </body>
 </html>
 <!-- Dependencies -->
-<script src="./Equations.js" type="text/javascript"></script>
+<!-- <script src="./Equations.js" type="text/javascript"></script> -->
 <script src="./Projectile.js" type="text/javascript"></script>
+<script src="../collision_handler.js"></script>
 
 <!-- Main Script -->
 <script src="./scene.js" type="text/javascript"></script>
 
 <!-- Canvas controller -->
 <script type="text/javascript">
-var stop = true
+// var stop = true
 var selectPosition = false
 var started = false
 var rect = null
@@ -59,10 +61,11 @@ function togglePause() {
     }
     started = true
 }
+
 window.onload = function () {
     c = document.getElementById("canvas");
     cc = c.getContext("2d");
-    setInterval(update, 1000/60);
+    // setInterval(update, 1000/60);
     render()
 
     // Set form min/max values
@@ -90,7 +93,8 @@ canvas.addEventListener('click', function(evt) {
 });
 
 // Form events
-document.getElementById("stop").addEventListener("click", togglePause)
+// document.getElementById("stop").addEventListener("click", togglePause)
+document.getElementById("start").addEventListener("click", start)
 document.getElementById("addProjectileButton").addEventListener("click", addProjectile)
 
 </script>

@@ -1,32 +1,17 @@
-const eq = new Equations();
-
-// Constants
-const CONSTANTS = {
-    g : -9.8,
-    canvasScale : 1,
-    timeScale : 4
-}
-
 // Time
-let lastFrame = new Date();
-let deltaTime = 0;
-let startTime = new Date();
-let time = 0; // (s)
-let pause = {
-    totalStandbyTime: 0,
-    standbyTime: 0,
-    started: new Date(),
-    paused: false
-}
+let lastFrame = new Date()
+let deltaTime = 0
+let startTime = new Date()
+let time = 0 // (s)
 
 // Collisions
-let collisions = [];
-let nextCollision = {t: null, p: null};
-let calculateCollisions = true;
+let collisions = []
+let nextCollision = {t: null, p: null}
+let calculateCollisions = true
 
 var projectiles = [
-    new Projectile({x: 600, y: 280, vxi: 50, vyi: 50, color: "red", name: "Projectile 1"}),
-    new Projectile({x: 30, y: 180, vxi: 50, vyi: 25, name: "Projectile 2"})
+    new Projectile({x: 5, y: 5, vxi: 1, vyi: 0, color: "red", name: "Projectile 1"}),
+    new Projectile({x: 20, y: 5, vxi: -2, vyi: 0, color: "white", name: "Projectile 2"})
 ]
 
 function addProjectile() {
@@ -35,163 +20,109 @@ function addProjectile() {
     var vx = Number(document.getElementById("inputVelX").value)
     var vy = Number(document.getElementById("inputVelY").value)
     var color = document.getElementById("inputColor").value
-    console.log(px, py, vx, vy, color);
+    console.log(px, py, vx, vy, color)
     projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
-
-    projectiles.map(p => {
-        p.captureAsInitialConditions()
-    })
-
-    time = 0
 
     render()
     updateLogging(force=true)
 }
 
-function calculateCollisionTime(p, c) {
-    /*
-    Solves for time, given initial conditions
-    */
-    console.warn("calculateCollisionTime");
-    this.collisions = []
-    // y conditions (top, bottom)
-    if (Math.abs(1/2 * CONSTANTS.g) > 0) {
-        this.collisions.push({t: eq.solveQuadratic({a: 1/2 * CONSTANTS.g, b: p.vel.initial.y, c: -(p.pos.initial.y - c.height + p.radius)}), p: p, axis: "x"});
-        this.collisions.push({t: eq.solveQuadratic({a: 1/2 * CONSTANTS.g, b: p.vel.initial.y, c: -p.pos.initial.y + p.radius}), p: p, axis: "x"});
-    } else {
-        // a = 0
-        if (p.vel.initial.y != 0) {
-            let t1 = (0-p.pos.initial.y+p.radius)/p.vel.initial.y;
-            let t2 = (c.height-p.pos.initial.y-p.radius)/p.vel.initial.y;
-            if (t1 > 0) {
-                this.collisions.push({t: t1, p: p, axis: "x"});
-            }
-            if (t2 > 0) {
-                this.collisions.push({t: t2, p: p, axis: "x"});
-            }
+function calculateCollisionEvents(time_limit) {
+    var t_tot = 0
+    var events = []
+
+    var projs_initial = []
+
+    projectiles.forEach(function(p) {
+        projs_initial.push(new Projectile({x: p.pos.x, y: p.pos.y, vxi: p.vel.x, vyi: p.vel.y, color: p.color})) // TODO: Copy rest of properties
+    })
+
+    while(time_limit > t_tot) {
+        var t, pr, wall
+        
+        [t, pr, wall] = [wallCol(projectiles, 400, 200), minTime(projectiles)].sort(function(a, b) {
+            return (a[0] || Number.MAX_VALUE) > (b[0] || Number.MAX_VALUE)
+        })[0]
+
+        var event = {
+            t: t + t_tot,    // Time of collision
+            pr,   // Projectiles involved
+            wall  // Wall (optional)
         }
+
+        projectiles.forEach(function(p) {
+            p.setPositionForTime(t)
+            p.setVelocityForTime(t)
+        })
+
+        if (wall) {
+            resolveCollision(pr[0], null, wall)
+        } else {
+            resolveCollision(pr[0], pr[1], null)
+        }
+        // console.log(event)
+        events.push(event)
+
+        t_tot += event.t
     }
 
-    // x conditions (right, left)
-    if (p.vel.initial.x != 0) {
-        let t1 = (0-p.pos.initial.x+p.radius)/p.vel.initial.x;
-        let t2 = (c.width-p.pos.initial.x-p.radius)/p.vel.initial.x;
-        if (t1 > 0) {
-            this.collisions.push({t: t1, p: p, axis: "y"});
-        }
-        if (t2 > 0) {
-            this.collisions.push({t: t2, p: p, axis: "y"});
-        }
-    }
-    // this.collisions.push({t: eq.solveLinear({y: c.width-p.radius, m: p.vel.initial.x, c: p.pos.initial.x}), p: p, axis: "x"});
-    // this.collisions.push({t: eq.solveLinear({y: 0+p.radius, m: p.vel.initial.x, c: p.pos.initial.x}), p: p, axis: "x"});
-    this.collisions.map(c => {
-        if (c.t != null && c.t > 0) {
-            collisions.push(c);
-        }
+    // Reset to initial conditions
+    projectiles.forEach(function(p, i) {
+        var initial = projs_initial[i]
+        p.setVelocity(initial.vel.x, initial.vel.y)
+        p.setPosition(initial.pos.x, initial.pos.y)
     })
-    pause.totalStandbyTime = 0;
+
+    console.log(events)
+
+    return events.sort(function(a, b) {return a.t < b.t})
 }
 
-function collide(collision) {
-    console.warn("Collided");
-    let p = collision.p;
-    let t = collision.t;
-
-    time = t
-    // Update projectile position precisely
-    p.setPositionForTime(t); // causes problems
-    console.error(p.name,"pos:", p.pos, "vel:", p.vel, t);
-
-    // Set global time
-    time = 0;
-    // startTime = new Date();
-
-    // Change projectile initial conditions
-    projectiles.map(tmp => {tmp.captureAsInitialConditions()});
-
-    // Inverse velocity when hits edge
-    if (collision.axis === "x") {
-        p.setInitialVelocity(-p.vel.x, p.vel.y);
-    } else if (collision.axis === "y") {
-        p.setInitialVelocity(p.vel.x, -p.vel.y);
-    }
-
-    // Reset collision variables
-    calculateCollisions = true;
-    nextCollision = {t: null, p: null};
-    collisions = [];
-    stop = true
+function start() {
+    collisions = calculateCollisionEvents(1000)
+    setInterval(update, 1000/60);    
 }
 
 function update() {
-    if (!stop) {
-        // Time calculation
-        let newTime = new Date();
+    // Time calculation
+    let newTime = new Date()
+     
+    deltaTime = newTime-lastFrame
+    lastFrame = newTime
 
+    time += deltaTime / 1000
 
-        // Reset pause
-        if (pause.paused) {
-            pause.paused = false;
-            pause.totalStandbyTime += pause.standbyTime;
-            lastFrame = newTime;
-        }
-        deltaTime = newTime-lastFrame;
-        lastFrame = newTime;
-
-        // time = (newTime - startTime - pause.totalStandbyTime) * CONSTANTS.timeScale / 1000; // Time in seconds
-        time += deltaTime * CONSTANTS.timeScale / 1000;
-        // console.log(time, " :: ", newTime, startTime, pause.totalStandbyTime);
-        if (time >= nextCollision.t && nextCollision.t != null) {
-            collide(nextCollision)
-        }
-
-        // Render background
-        render()
-
-        // Render projectiles
-        projectiles.map(p => {
-            p.setPositionForTime(time);
-            p.render(cc);
-            // Collision calculation
-            if (calculateCollisions) {
-                calculateCollisionTime(p, c);
-            }
-        });
-        if (calculateCollisions) {
-            // Sort collisions
-            collisions = collisions.sort(function(a, b) {  return a.t - b.t;});
-            if (collisions.length > 0) {
-                nextCollision = collisions[0];
-            }
-            calculateCollisions = false;
-            console.table(collisions);
-            console.warn("Next collision: ", nextCollision.t);
-        }
-        // stop = true
-    } else {
-        // Paused
-        if (!pause.paused) {
-            // First frame paused
-            pause.paused = true;
-            pause.started = new Date();
+    if (time >= collisions[collisions.length-1].t) {
+        var event = collisions.pop()
+        console.log(event)
+        event.pr.forEach(function(p) {
+            p.setPositionForTime(event.t)
+            p.setVelocityForTime(event.t)
+        })
+        
+        if (event.wall) {
+            resolveCollision(event.pr, null, event.wall)
         } else {
-            pause.standbyTime = new Date() - pause.started;
+            resolveCollision(event.pr[0], event.pr[1], null)
         }
     }
+
+    // Render background
+    render()
+
     // Display statistics
-    updateLogging();
+    updateLogging()
 }
 
 function render() {
     // Render background
-    cc.fillStyle = "black";
-    cc.fillRect(0, 0, c.width, c.height);
+    cc.fillStyle = "black"
+    cc.fillRect(0, 0, c.width, c.height)
 
     // Render projectiles
     projectiles.map(p => {
-        p.render(cc);
-    });
+        p.render(cc)
+    })
 }
 
 function updateLogging(force=false) {
@@ -199,7 +130,7 @@ function updateLogging(force=false) {
         Frame delta: ${deltaTime}ms
         <br>
         Time: ${Math.round(time*100)/100}s
-    `;
+    `
 
     let projectileLog = ""
     if (!stop || force) {
@@ -212,8 +143,8 @@ function updateLogging(force=false) {
             <br>
             <span>Velocity (m/s): ${Math.round(p.vel.x*100)/100}, ${Math.round(p.vel.y*100)/100}</span>
             `
-        });
-        document.getElementById("projectiles").innerHTML = projectileLog;
+        })
+        document.getElementById("projectiles").innerHTML = projectileLog
         document.getElementById("projectiles").innerHTML += `
         <br>
         <span>Next collision time: ${Math.round(nextCollision.t*100)/100}s</span>

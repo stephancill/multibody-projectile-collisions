@@ -1,69 +1,3 @@
-function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Untitled Projectile"}) {
-    /*
-    *  ----------
-    *  Projectile
-    *  ----------
-    */
-    this.pos = {x, y};
-    this.vel = {x: vxi, y: vyi};
-    this.color = color;
-    this.mass = mass;
-    this.radius = radius;
-    this.name = name;
-
-    console.log(`New ${this.color} projectile at (${this.pos.x}, ${this.pos.y}) with velocity (${this.vel.x}, ${this.vel.y})`);
-
-    this.setVelocityForTime = function (time) {
-        let t = time;
-        this.vel.x = this.vel.x;
-        // this.vel.y = this.vel.y + t * -9.8;
-    }
-
-    // Set position given time
-    this.setPositionForTime = function (time) {
-        // dx(t) = Vi*t + 1/2 * a * t^2
-        let t = time;
-        this.pos.x = this.pos.x + this.vel.x * t;
-        // this.pos.y = 1/2 * -9.8 * Math.pow(t, 2) + this.vel.y * t + this.pos.y;
-    }
-
-    this.setVelocity = function (vx, vy) {
-        this.vel.x = vx;
-        this.vel.y = vy;
-    }
-    this.setPosition = function (x, y) {
-        this.pos.x = x;
-        this.pos.y = y;
-    }
-
-    this.resetPositionWithinBounds = function() {
-        if (this.pos.x > rect.right-this.radius) {
-            console.log("x > rect.right-this.radius");
-            this.pos.x = rect.right-this.radius
-        } else if (this.pos.x < this.radius) {
-            console.log("x < this.position.radius");
-            this.pos.x = this.radius
-        }
-        if (this.pos.y > rect.bottom-this.radius) {
-            this.pos.y = rect.bottom-this.radius
-        } else if (this.pos.y < this.radius) {
-            this.pos.y = this.radius
-        }
-    }
-
-    // Rendering
-    this.render = function (context) {
-        // Draw
-        var startPoint = (Math.PI/180)*0;
-        var endPoint = (Math.PI/180)*360;
-        context.fillStyle = this.color;
-        context.beginPath();
-        context.arc(this.pos.x*CONSTANTS.canvasScale, this.pos.y*CONSTANTS.canvasScale, this.radius*CONSTANTS.canvasScale, startPoint, endPoint, true);
-        context.fill();
-        context.closePath();
-    }
-}
-
 function solveQuad(a, b, c) {
     if (a == 0) {
 		if (b == 0) {
@@ -169,7 +103,7 @@ function resolveCollision(p1, p2, wall) {
 
 // TODO: Implement rest of python functions
 
-function wallCol(projectiles, height, width) {
+function wallCol(projectiles, width, height) {
     var time_col, colliding_wall, colliding_proj, time_new
     for (var i = 0; i < projectiles.length; i++) {
         var proj = projectiles[i]
@@ -241,7 +175,7 @@ function wallCol(projectiles, height, width) {
     }
 
     if (time_col) {
-        return [time_col, projectiles[colliding_proj], colliding_wall]
+        return [time_col, [projectiles[colliding_proj]], colliding_wall]
     } else {
         return [null, null, null]
     }
@@ -265,13 +199,27 @@ function minTime(projectiles) {
         }
     }
     if (time_col) {
-        return [time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), null]      
+        return [time_col, [projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]], null]      
     } else {
         return [null, null, null]
     }
     
 }
 
+/*
+--------------------------------------------------------------
+Cycle
+--------------------------------------------------------------
+1. Calculate time of next collision (TODO: include walls)
+2. Update pos/vel as a function of time (to time of collision)
+3. Resolve collision
+4. Update colliding projectiles pos/vel
+5. Step 1
+*/
+
+// Example:
+
+/*
 var p1 = new Projectile({x: 5, y: 5, vxi: 1, vyi: 0, color: "red", name: "Projectile 1"})
 var p2 = new Projectile({x: 20, y: 5, vxi: -2, vyi: 0, color: "red", name: "Projectile 2"})
 
@@ -293,12 +241,12 @@ for(var i = 0; i < 10; i++) {
     console.log("Positions at collision time: ", p1.pos, p2.pos)
     
     if (wall) {
-        resolveCollision(pr, null, wall)
+        resolveCollision([pr], null, wall)
     } else {
-        resolveCollision(p1, p2, null)
-        
+        resolveCollision(pr[0], pr[1], null)
     }
     console.log("Velocities after collision: ", p1.vel, p2.vel);
     console.log('\n');
 }
+*/
 
