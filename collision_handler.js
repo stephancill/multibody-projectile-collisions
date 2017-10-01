@@ -127,10 +127,10 @@ function resolveCollision(p1, p2, wall) {
     // TODO: Unpack tuple js
     if (wall) {
         if (wall == 'x') {
-            p1.setVelocity(-p1["vx"], p1["vy"])
-            return [-p1["vx"], p1["vy"]]            
+            p1.setVelocity(-p1.vel.x, p1.vel.y)
+            return [-p1.vel.x, p1.vel.y]            
         } else {
-            p1.setVelocity(p1["vx"], -p1["vy"])
+            p1.setVelocity(p1.vel.x, -p1.vel.y)
             return [p1["vx"], -p1["vy"]]
         }
     } 
@@ -272,8 +272,8 @@ function minTime(projectiles) {
     
 }
 
-var p1 = new Projectile({x: 5, y: 5, vxi: 1, vyi: 0, color: "red"})
-var p2 = new Projectile({x: 20, y: 5, vxi: -2, vyi: 0, color: "red"})
+var p1 = new Projectile({x: 5, y: 5, vxi: 1, vyi: 0, color: "red", name: "Projectile 1"})
+var p2 = new Projectile({x: 20, y: 5, vxi: -2, vyi: 0, color: "red", name: "Projectile 2"})
 
 var projs = [p1, p2]
 
@@ -282,17 +282,23 @@ var t, pr, wall
 console.log('\n');
 
 for(var i = 0; i < 10; i++) {
-    [t, pr, wall] = [wallCol(projs, 200, 400), minTime(projs)].sort(function(a, b) {return a[0] < b[0]})[0]
+    [t, pr, wall] = [wallCol(projs, 200, 400), minTime(projs)].sort(function(a, b) {return (a[0] || Number.MAX_VALUE) > (b[0] || Number.MAX_VALUE)})[0]
     
-    console.log("Time until next collision: ", t, wall);
+    console.log("Time until next collision: ", t, wall, wall ? pr.name : "");
     console.log("Velocities: ", p1.vel, p2.vel);
     projs.map(function(p) {
         p.setPositionForTime(t)
         p.setVelocityForTime(t)
     })
-    console.log("Positions at collision time: ", p1.pos, p2.pos);
-    console.log('\n');
+    console.log("Positions at collision time: ", p1.pos, p2.pos)
     
-    resolveCollision(p1, p2, null)
+    if (wall) {
+        resolveCollision(pr, null, wall)
+    } else {
+        resolveCollision(p1, p2, null)
+        
+    }
+    console.log("Velocities after collision: ", p1.vel, p2.vel);
+    console.log('\n');
 }
 
