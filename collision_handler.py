@@ -210,7 +210,13 @@ if __name__ == "__main__":
 	projs = [proj1, proj2]
 
 	# [print(x) for x in projs]
-
+"""
+1. Calculate time of next collision (TODO: include walls)
+2. Update pos/vel as a function of time (to time of collision)
+3. Resolve collision
+4. Update colliding projectiles pos/vel
+5. Step 1
+"""
 	for _ in range(10):
 		# 1. Calculate time of next collision (TODO: include walls)
 		
