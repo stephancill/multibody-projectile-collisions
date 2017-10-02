@@ -10,22 +10,22 @@ let nextCollision = {t: null, p: null}
 let calculateCollisions = true
 
 var projectiles = [
-    new Projectile({x: 5, y: 5, vxi: 1, vyi: 0, color: "red", name: "Projectile 1"}),
-    new Projectile({x: 20, y: 5, vxi: -2, vyi: 0, color: "white", name: "Projectile 2"})
+    new Projectile({x: 20, y: 20, vxi: 40, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
+    new Projectile({x: 450, y: 20, vxi: -80, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
 ]
 
-function addProjectile() {
-    var px = Number(document.getElementById("inputPosX").value)
-    var py = Number(document.getElementById("inputPosY").value)
-    var vx = Number(document.getElementById("inputVelX").value)
-    var vy = Number(document.getElementById("inputVelY").value)
-    var color = document.getElementById("inputColor").value
-    console.log(px, py, vx, vy, color)
-    projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
+// function addProjectile() {
+//     var px = Number(document.getElementById("inputPosX").value)
+//     var py = Number(document.getElementById("inputPosY").value)
+//     var vx = Number(document.getElementById("inputVelX").value)
+//     var vy = Number(document.getElementById("inputVelY").value)
+//     var color = document.getElementById("inputColor").value
+//     console.log(px, py, vx, vy, color)
+//     projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
 
-    render()
-    updateLogging(force=true)
-}
+//     render()
+//     updateLogging(force=true)
+// }
 
 function calculateCollisionEvents(time_limit) {
     var t_tot = 0
@@ -80,7 +80,7 @@ function calculateCollisionEvents(time_limit) {
 
 function start() {
     collisions = calculateCollisionEvents(1000)
-    setInterval(update, 1000/60);    
+    setInterval(update, 1000/30);    
 }
 
 function update() {
@@ -92,6 +92,8 @@ function update() {
 
     time += deltaTime / 1000
 
+    // time += 1
+
     if (time >= collisions[collisions.length-1].t) {
         var event = collisions.pop()
         console.log(event)
@@ -101,14 +103,16 @@ function update() {
         })
         
         if (event.wall) {
-            resolveCollision(event.pr, null, event.wall)
+            resolveCollision(event.pr[0], null, event.wall)
         } else {
             resolveCollision(event.pr[0], event.pr[1], null)
         }
+
+        // Render background
+        render()
     }
 
-    // Render background
-    render()
+    
 
     // Display statistics
     updateLogging()
@@ -117,10 +121,10 @@ function update() {
 function render() {
     // Render background
     cc.fillStyle = "black"
-    cc.fillRect(0, 0, c.width, c.height)
+    cc.fillRect(0, 0, cc.canvas.width, cc.canvas.height)
 
     // Render projectiles
-    projectiles.map(p => {
+    projectiles.forEach(function (p) {
         p.render(cc)
     })
 }
@@ -134,7 +138,7 @@ function updateLogging(force=false) {
 
     let projectileLog = ""
     if (!stop || force) {
-        projectiles.map(p => {
+        projectiles.forEach(p => {
             projectileLog += `
             <br><br>
             <span>Name: ${p.name}</span>
