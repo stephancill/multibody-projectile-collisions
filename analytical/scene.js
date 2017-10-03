@@ -10,22 +10,22 @@ let nextCollision = {t: null, p: null}
 let calculateCollisions = true
 
 var projectiles = [
-    new Projectile({x: 20, y: 20, vxi: 40, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
+    new Projectile({x: 25, y: 20, vxi: 40, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
     new Projectile({x: 450, y: 20, vxi: -80, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
 ]
 
-// function addProjectile() {
-//     var px = Number(document.getElementById("inputPosX").value)
-//     var py = Number(document.getElementById("inputPosY").value)
-//     var vx = Number(document.getElementById("inputVelX").value)
-//     var vy = Number(document.getElementById("inputVelY").value)
-//     var color = document.getElementById("inputColor").value
-//     console.log(px, py, vx, vy, color)
-//     projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
+function addProjectile() {
+    var px = Number(document.getElementById("inputPosX").value)
+    var py = Number(document.getElementById("inputPosY").value)
+    var vx = Number(document.getElementById("inputVelX").value)
+    var vy = Number(document.getElementById("inputVelY").value)
+    var color = document.getElementById("inputColor").value
+    console.log(px, py, vx, vy, color)
+    projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
 
-//     render()
-//     updateLogging(force=true)
-// }
+    render()
+    updateLogging(force=true)
+}
 
 function calculateCollisionEvents(time_limit) {
     var t_tot = 0
@@ -45,7 +45,7 @@ function calculateCollisionEvents(time_limit) {
         })[0]
 
         var event = {
-            t: t + t_tot,    // Time of collision
+            t,    // Time of collision
             pr,   // Projectiles involved
             wall  // Wall (optional)
         }
@@ -60,6 +60,10 @@ function calculateCollisionEvents(time_limit) {
         } else {
             resolveCollision(pr[0], pr[1], null)
         }
+
+        projectiles.forEach(function(p) {
+            p.captureAsInitialConditions()
+        })
         // console.log(event)
         events.push(event)
 
@@ -71,6 +75,7 @@ function calculateCollisionEvents(time_limit) {
         var initial = projs_initial[i]
         p.setVelocity(initial.vel.x, initial.vel.y)
         p.setPosition(initial.pos.x, initial.pos.y)
+        p.captureAsInitialConditions()
     })
 
     console.log(events)
@@ -79,25 +84,30 @@ function calculateCollisionEvents(time_limit) {
 }
 
 function start() {
-    collisions = calculateCollisionEvents(1000)
-    setInterval(update, 1000/30);    
+    collisions = calculateCollisionEvents(50)
+
+    // // Time
+    // lastFrame = new Date()
+    // deltaTime = 0
+    startTime = new Date()
+    time = 0 // (s)
+
+    setInterval(update, 1000/60);    
 }
 
 function update() {
     // Time calculation
-    let newTime = new Date()
-     
-    deltaTime = newTime-lastFrame
-    lastFrame = newTime
-
+    deltaTime = new Date() - lastFrame
+    lastFrame = new Date()
     time += deltaTime / 1000
-
-    // time += 1
 
     if (time >= collisions[collisions.length-1].t) {
         var event = collisions.pop()
+        
+        time = event.t
+        
         console.log(event)
-        event.pr.forEach(function(p) {
+        projectiles.forEach(function(p) {
             p.setPositionForTime(event.t)
             p.setVelocityForTime(event.t)
         })
@@ -108,11 +118,22 @@ function update() {
             resolveCollision(event.pr[0], event.pr[1], null)
         }
 
-        // Render background
-        render()
+        projectiles.forEach(function(p) {
+            p.captureAsInitialConditions()
+        })
+
+        time = 0
+    } else {
+        projectiles.forEach(function(p) {
+            p.setPositionForTime(time)
+            p.setVelocityForTime(time)
+        })
     }
 
     
+
+    // Render background and projectiles
+    render()
 
     // Display statistics
     updateLogging()

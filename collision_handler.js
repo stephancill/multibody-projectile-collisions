@@ -96,6 +96,7 @@ function resolveCollision(p1, p2, wall) {
     var newvy2 = yu2*Math.cos(a)+u2*Math.sin(a)
 
     p1.setVelocity(newvx1, newvy1)
+
     p2.setVelocity(newvx2, newvy2)
 
     return [newvx1, newvy1, newvx2, newvy2]

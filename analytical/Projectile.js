@@ -4,8 +4,8 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Un
     *  Projectile
     *  ----------
     */
-    this.pos = {x, y};
-    this.vel = {x: vxi, y: vyi};
+    this.pos = {x, y, xi: x, yi: y};
+    this.vel = {x: vxi, y: vyi, xi: vxi, yi: vyi};
     this.color = color;
     this.mass = mass;
     this.radius = radius;
@@ -13,17 +13,16 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Un
 
     console.log(`New ${this.color} projectile at (${this.pos.x}, ${this.pos.y}) with velocity (${this.vel.x}, ${this.vel.y})`);
 
-    this.setVelocityForTime = function (time) {
-        let t = time;
+    this.setVelocityForTime = function (t) {
         this.vel.x = this.vel.x;
         // this.vel.y = this.vel.y + t * -9.8;
     }
 
     // Set position given time
-    this.setPositionForTime = function (time) {
+    this.setPositionForTime = function (t) {
         // dx(t) = Vi*t + 1/2 * a * t^2
-        let t = time;
-        this.pos.x = this.pos.x + this.vel.x * t;
+        // console.log(t)
+        this.pos.x = this.pos.xi + this.vel.x * t;
         // this.pos.y = 1/2 * -9.8 * Math.pow(t, 2) + this.vel.y * t + this.pos.y;
     }
 
@@ -34,6 +33,15 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Un
     this.setPosition = function (x, y) {
         this.pos.x = x;
         this.pos.y = y;
+    }
+
+    this.captureAsInitialConditions = function () {
+        // Position
+        this.pos.xi = this.pos.x
+        this.pos.yi = this.pos.y
+        // Velocity
+        this.vel.xi = this.vel.x
+        this.vel.yi = this.vel.y
     }
 
     this.resetPositionWithinBounds = function() {
