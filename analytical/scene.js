@@ -60,10 +60,15 @@ function calculateCollisionEvents(time_limit) {
         })
 
         if (wall) {
+            console.log(t, pr[0].color)
             event.new_vels = resolveCollision(pr[0], null, wall)
         } else {
             event.new_vels = resolveCollision(pr[0], pr[1], null)
         }
+
+        pr.forEach(function (p, i) {
+            p.setVelocity(event.new_vels[i].vx, event.new_vels[i].vy)
+        })
 
         projectiles.forEach(function(p) {
             p.captureAsInitialConditions()
@@ -117,14 +122,7 @@ function update() {
             p.setVelocityForTime(event.t)
         })
 
-        // if (event.wall) {
-        //     // resolveCollision(event.pr[0], null, event.wall)
-            
-        // } else {
-        //     // resolveCollision(event.pr[0], event.pr[1], null)
-        // }
         event.pr.forEach(function (p, i) {
-            // console.log(event)
             p.setVelocity(event.new_vels[i].vx, event.new_vels[i].vy)
         })
 
