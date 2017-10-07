@@ -1,17 +1,20 @@
 // Time
-let lastFrame = new Date()
+let lastFrame = null
 let deltaTime = 0
-let startTime = new Date()
+let startTime = null
 let time = 0 // (s)
 
 // Collisions
-let collisions = []
-let nextCollision = {t: null, p: null}
-let calculateCollisions = true
+let collisions = [] // Queue
+let current_collision = 0
 
+// var projectiles = [
+//     new Projectile({x: 25, y: 20, vxi: 100, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
+//     new Projectile({x: 450, y: 20, vxi: -40, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
+// ]
 var projectiles = [
-    new Projectile({x: 25, y: 20, vxi: 40, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
-    new Projectile({x: 450, y: 20, vxi: -80, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
+    new Projectile({x: 20, y: 20, vxi: 100, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
+    new Projectile({x: 420, y: 20, vxi: -100, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
 ]
 
 function addProjectile() {
@@ -39,15 +42,16 @@ function calculateCollisionEvents(time_limit) {
 
     while(time_limit > t_tot) {
         var t, pr, wall
-        
-        [t, pr, wall] = [wallCol(projectiles, 400, 200), minTime(projectiles)].sort(function(a, b) {
+
+        [t, pr, wall] = [wallCol(projectiles, cc.canvas.width, cc.canvas.height), minTime(projectiles)].sort(function(a, b) {
             return (a[0] || Number.MAX_VALUE) > (b[0] || Number.MAX_VALUE)
         })[0]
 
         var event = {
             t,    // Time of collision
             pr,   // Projectiles involved
-            wall  // Wall (optional)
+            wall, // Wall (optional)
+            new_vels: []
         }
 
         projectiles.forEach(function(p) {
@@ -56,9 +60,9 @@ function calculateCollisionEvents(time_limit) {
         })
 
         if (wall) {
-            resolveCollision(pr[0], null, wall)
+            event.new_vels = resolveCollision(pr[0], null, wall)
         } else {
-            resolveCollision(pr[0], pr[1], null)
+            event.new_vels = resolveCollision(pr[0], pr[1], null)
         }
 
         projectiles.forEach(function(p) {
@@ -68,6 +72,7 @@ function calculateCollisionEvents(time_limit) {
         events.push(event)
 
         t_tot += event.t
+    // console.log(events)
     }
 
     // Reset to initial conditions
@@ -78,20 +83,21 @@ function calculateCollisionEvents(time_limit) {
         p.captureAsInitialConditions()
     })
 
-    console.log(events)
-
-    return events.sort(function(a, b) {return a.t < b.t})
+    // return events.sort(function(a, b) {return a.t < b.t})
+    return events
 }
 
 function start() {
     collisions = calculateCollisionEvents(50)
-
+    console.log(collisions)
     // // Time
     // lastFrame = new Date()
     // deltaTime = 0
     startTime = new Date()
+    lastFrame = new Date()
     time = 0 // (s)
-
+    current_collision = 0
+    
     setInterval(update, 1000/60);    
 }
 
@@ -101,28 +107,35 @@ function update() {
     lastFrame = new Date()
     time += deltaTime / 1000
 
-    if (time >= collisions[collisions.length-1].t) {
-        var event = collisions.pop()
+    if (time >= collisions[current_collision].t) {
+        var event = collisions[current_collision]
         
         time = event.t
         
-        console.log(event)
         projectiles.forEach(function(p) {
             p.setPositionForTime(event.t)
             p.setVelocityForTime(event.t)
         })
-        
-        if (event.wall) {
-            resolveCollision(event.pr[0], null, event.wall)
-        } else {
-            resolveCollision(event.pr[0], event.pr[1], null)
-        }
+
+        // if (event.wall) {
+        //     // resolveCollision(event.pr[0], null, event.wall)
+            
+        // } else {
+        //     // resolveCollision(event.pr[0], event.pr[1], null)
+        // }
+        event.pr.forEach(function (p, i) {
+            // console.log(event)
+            p.setVelocity(event.new_vels[i].vx, event.new_vels[i].vy)
+        })
 
         projectiles.forEach(function(p) {
             p.captureAsInitialConditions()
         })
 
         time = 0
+
+        current_collision += 1
+
     } else {
         projectiles.forEach(function(p) {
             p.setPositionForTime(time)

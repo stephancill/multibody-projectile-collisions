@@ -45,9 +45,10 @@ function timeUntilCollision(p1, p2) {
 	t = solveQuad(a,b,c)
 
 	if (t) {
-        var  dist = (X + p1.vel.x * (t+Math.pow(10,-4)) - p2.vel.x * Math.pow((t+Math.pow(10,-4))),2) + (Y + p1.vel.y * (t+Math.pow(10,-4)) - p2.vel.y * Math.pow((t+Math.pow(10,-4))),2)
-		// this is to check if they collide by simulating their positions 10**-4 s after "collision"
-		if (dist < Math.pow((p1.radius+p2.radius), 2)) {
+        var newt = t+Math.pow(10,-4)
+        var dist = Math.pow((X + VX*(newt)),2) + Math.pow((Y + VY*newt),2)
+        // this is to check if they collide by simulating their positions 10**-4 s after "collision"
+        if (dist < Math.pow(Rtot, 2)) {
             return t
         } else {
             return null
@@ -62,10 +63,10 @@ function resolveCollision(p1, p2, wall) {
     if (wall) {
         if (wall == 'x') {
             p1.setVelocity(-p1.vel.x, p1.vel.y)
-            return [-p1.vel.x, p1.vel.y]            
+            return [{vx: -p1.vel.x, vy: p1.vel.y}]            
         } else {
             p1.setVelocity(p1.vel.x, -p1.vel.y)
-            return [p1["vx"], -p1["vy"]]
+            return [{vx: p1.vel.x, vy: -p1.vel.y}]
         }
     } 
 
@@ -99,7 +100,7 @@ function resolveCollision(p1, p2, wall) {
 
     p2.setVelocity(newvx2, newvy2)
 
-    return [newvx1, newvy1, newvx2, newvy2]
+    return [{vx: newvx1, vy: newvy1}, {vx: newvx2, vy: newvy2}]
 }
 
 // TODO: Implement rest of python functions
@@ -206,6 +207,27 @@ function minTime(projectiles) {
     }
     
 }
+
+// def minTime(projectiles):
+// 	colliding_objects = None
+// 	time_col = None
+	
+// 	for i in range(len(projectiles)-1):
+// 		for j in range(i+1,len(projectiles)):
+// 			time_new = timeUntilCollision(projectiles[i], projectiles[j])
+// 			if time_new != None:	
+// 				if time_col != None:	
+// 					if time_new < time_col:
+// 						time_col = time_new
+// 						colliding_objects = [i,j]
+// 				else:
+// 					time_col = time_new
+// 					colliding_objects = [i,j]
+					
+// 	if time_col != None:
+// 		return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
+// 	else:
+// 		return (None, None, None)
 
 /*
 --------------------------------------------------------------
