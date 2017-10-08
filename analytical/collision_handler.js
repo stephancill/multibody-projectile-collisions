@@ -9,7 +9,7 @@ function solveQuad(a, b, c) {
         } else{
 			if (-c/b >= 0) {
                 return -c/b
-            } else { 
+            } else {
                 return null
             }
         }
@@ -26,7 +26,7 @@ function solveQuad(a, b, c) {
             } else {
                 return null
             }
-                
+
         }
     }
 }
@@ -43,8 +43,8 @@ function timeUntilCollision(p1, p2) {
     c = Math.pow(X,2) + Math.pow(Y,2) - Math.pow(Rtot,2)
 
 	t = solveQuad(a,b,c)
-
-	if (t) {
+//   console.log(t,p1,'POES')
+	if (t != null) {
         var newt = t+Math.pow(10,-4)
         var dist = Math.pow((X + VX*(newt)),2) + Math.pow((Y + VY*newt),2)
         // this is to check if they collide by simulating their positions 10**-4 s after "collision"
@@ -59,14 +59,17 @@ function timeUntilCollision(p1, p2) {
 }
 
 function resolveCollision(p1, p2, wall) {
+    var out = {}
+
     // Handle collision with wall
     if (wall) {
         if (wall == 'x') {
-            return [{vx: -p1.vel.x, vy: p1.vel.y}]            
+            out[p1.id] = {vx: -p1.vel.x, vy: p1.vel.y}
         } else {
-            return [{vx: p1.vel.x, vy: -p1.vel.y}]
+            out[p1.id] = {vx: p1.vel.x, vy: -p1.vel.y}
         }
-    } 
+        return out
+    }
 
     // Handle collision with projectile
     var a
@@ -95,7 +98,11 @@ function resolveCollision(p1, p2, wall) {
     var newvx2 = yu2*Math.sin(a)+u2*Math.cos(a)
     var newvy2 = yu2*Math.cos(a)+u2*Math.sin(a)
 
-    return [{vx: newvx1, vy: newvy1}, {vx: newvx2, vy: newvy2}]
+    
+    out[p1.id] = {vx: newvx1, vy: newvy1}
+    out[p2.id] =  {vx: newvx2, vy: newvy2}
+
+    return out
 }
 
 function wallCol(projectiles, width, height) {
@@ -104,8 +111,8 @@ function wallCol(projectiles, width, height) {
         var proj = projectiles_map[projectiles[i]]
         if (proj.vel.x > 0) {
             time_new = (proj.radius + proj.pos.x - width)/-proj.vel.x
-            if (time_new) {
-                if (time_col) {
+            if (time_new != null) {
+                if (time_col != null) {
                     if (time_new < time_col) {
                         time_col = time_new
                         colliding_proj = i
@@ -119,8 +126,8 @@ function wallCol(projectiles, width, height) {
             }
         } else if (proj.vel.x < 0) {
             time_new = -(-proj.radius+proj.pos.x)/proj.vel.x
-            if (time_new) {
-                if (time_col) {
+            if (time_new != null) {
+                if (time_col != null) {
                     if (time_new < time_col) {
                         time_col = time_new
                         colliding_proj = i
@@ -136,8 +143,8 @@ function wallCol(projectiles, width, height) {
 
         if (proj.vel.y > 0) {
             time_new = solveQuad(0.5*-9.8,proj.vel.y,proj.radius+proj.pos.y-height)
-            if (time_new) {
-                if (time_col) {
+            if (time_new != null) {
+                if (time_col != null) {
                     if (time_new < time_col) {
                         time_col = time_new
                         colliding_proj = i
@@ -153,8 +160,8 @@ function wallCol(projectiles, width, height) {
 
         if (((proj.pos.y-proj.radius)!=0) && (proj.vel.y!=0)) {
             time_new = solveQuad(0.5*g,proj.vel.y,-proj.radius+proj.pos.y)
-            if (time_new) {
-                if (time_col) {
+            if (time_new != null) {
+                if (time_col != null) {
                     if (time_new < time_col) {
                         time_col = time_new
                         colliding_proj = i
@@ -168,9 +175,9 @@ function wallCol(projectiles, width, height) {
             }
         }
     }
-
-    if (time_col) {
-        return [time_col, [projectiles[colliding_proj]], colliding_wall]
+    // console.log(time_col,'WALL')
+    if (time_col != null) {
+        return [Math.abs(time_col), [projectiles[colliding_proj]], colliding_wall]
     } else {
         return [null, null, null]
     }
@@ -181,8 +188,8 @@ function minTime(projectiles) {
     for(var i = 0; i < projectiles.length-1; i++) {
         for (var j = i+1; j < projectiles.length; j++){
             time_new = timeUntilCollision(projectiles_map[projectiles[i]], projectiles_map[projectiles[j]])
-            if (time_new) {
-                if (time_col) {
+            if (time_new  != null) {
+                if (time_col  != null) {
                     if (time_new < time_col)
                         time_col = time_new
                         colliding_objects = [i,j]
@@ -193,8 +200,9 @@ function minTime(projectiles) {
             }
         }
     }
-    if (time_col) {
-        return [time_col, [projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]], null]      
+
+    if (time_col != null) {
+        return [Math.abs(time_col), [projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]], null]
     } else {
         return [null, null, null]
     }
@@ -203,19 +211,19 @@ function minTime(projectiles) {
 // def minTime(projectiles):
 // 	colliding_objects = None
 // 	time_col = None
-	
+
 // 	for i in range(len(projectiles)-1):
 // 		for j in range(i+1,len(projectiles)):
 // 			time_new = timeUntilCollision(projectiles[i], projectiles[j])
-// 			if time_new != None:	
-// 				if time_col != None:	
+// 			if time_new != None:
+// 				if time_col != None:
 // 					if time_new < time_col:
 // 						time_col = time_new
 // 						colliding_objects = [i,j]
 // 				else:
 // 					time_col = time_new
 // 					colliding_objects = [i,j]
-					
+
 // 	if time_col != None:
 // 		return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
 // 	else:
@@ -246,7 +254,7 @@ console.log('\n');
 
 for(var i = 0; i < 10; i++) {
     [t, pr, wall] = [wallCol(projs, 200, 400), minTime(projs)].sort(function(a, b) {return (a[0] || Number.MAX_VALUE) > (b[0] || Number.MAX_VALUE)})[0]
-    
+
     console.log("Time until next collision: ", t, wall, wall ? pr.name : "");
     console.log("Velocities: ", p1.vel, p2.vel);
     projs.map(function(p) {
@@ -254,7 +262,7 @@ for(var i = 0; i < 10; i++) {
         p.setVelocityForTime(t)
     })
     console.log("Positions at collision time: ", p1.pos, p2.pos)
-    
+
     if (wall) {
         resolveCollision([pr], null, wall)
     } else {
@@ -264,4 +272,3 @@ for(var i = 0; i < 10; i++) {
     console.log('\n');
 }
 */
-

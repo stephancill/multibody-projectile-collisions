@@ -54,7 +54,7 @@ function calulateNextEvent() {
         var _b = b[0]
         if (_a === null) { _a = Number.MAX_VALUE }
         if (_b === null) { _b = Number.MAX_VALUE } 
-        // console.log(_a, _b)
+        console.log(_a, _b)
         return _a > _b
     })[0]
 
@@ -76,7 +76,9 @@ function calulateNextEvent() {
         event.new_vels = resolveCollision(projectiles_map[pr[0]], projectiles_map[pr[1]], null)
     }
 
+    console.log(event)
     pr.forEach(function (p, i) {
+        // console.log(p, i)
         projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
     })
 
@@ -130,8 +132,8 @@ function calculateCollisionEvents(time_limit) {
             event.new_vels = resolveCollision(projectiles_map[pr[0]], projectiles_map[pr[1]], null)
         }
 
-        pr.forEach(function (p, i) {
-            projectiles_map[p].setVelocity(event.new_vels[i].vx, event.new_vels[i].vy)
+        pr.forEach(function (p) {
+            projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
         })
 
         projectiles.forEach(function(p) {
@@ -174,7 +176,7 @@ function update() {
     // Time calculation
     deltaTime = new Date() - lastFrame
     lastFrame = new Date()
-    time += deltaTime / 4000
+    time += deltaTime / 1000
 
     if (time >= next_collision.t) {
         var event = next_collision
@@ -187,8 +189,8 @@ function update() {
             projectiles_map[p].setVelocityForTime(event.t)
         })
 
-        event.pr.forEach(function (p, i) {
-            projectiles_map[p].setVelocity(event.new_vels[i].vx, event.new_vels[i].vy)
+        event.pr.forEach(function (p) {
+            projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
         })
 
         projectiles.forEach(function(p) {
