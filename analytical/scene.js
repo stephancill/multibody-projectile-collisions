@@ -14,8 +14,8 @@ let current_collision = 0
 // ]
 var projectiles_map = {
     0: new Projectile({x: 20, y: 20, vxi: 500, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
-    //1: new Projectile({x: 420, y: 20, vxi: -1000, vyi: 0, color: "green", name: "Projectile 2", radius: 20}),
-    1: new Projectile({x: 980, y: 20, vxi: -500, vyi: 0, color: "blue", name: "Projectile 3", radius: 20})
+    // 1: new Projectile({x: 420, y: 20, vxi: -1000, vyi: 0, color: "green", name: "Projectile 2", radius: 20}),
+    2: new Projectile({x: 980, y: 20, vxi: -500, vyi: 0, color: "blue", name: "Projectile 3", radius: 20})
 }
 
 var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})
@@ -76,8 +76,7 @@ function calulateNextEvent() {
         event.new_vels = resolveCollision(projectiles_map[pr[0]], projectiles_map[pr[1]], null)
     }
 
-    console.log(event)
-    pr.forEach(function (p, i) {
+    pr.forEach(function (p) {
         // console.log(p, i)
         projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
     })
@@ -87,8 +86,8 @@ function calulateNextEvent() {
     })
 
     // Reset to initial conditions
-    projectiles.forEach(function(p, i) {
-        var initial = projs_initial[i]
+    projectiles.forEach(function(p) {
+        var initial = projs_initial[p]
         projectiles_map[p].setVelocity(initial.vxi, initial.vyi)
         projectiles_map[p].setPosition(initial.x, initial.y)
         projectiles_map[p].captureAsInitialConditions()
@@ -97,73 +96,10 @@ function calulateNextEvent() {
     return event
 }
 
-function calculateCollisionEvents(time_limit) {
-    var t_tot = 0
-    var events = []
-
-    var projs_initial = []
-
-    projectiles.forEach(function(p) {
-        projs_initial.push({x: p.pos.x, y: p.pos.y, vxi: p.vel.x, vyi: p.vel.y, color: p.color}) // TODO: Copy rest of properties
-    })
-
-    while(time_limit > t_tot) {
-        var t, pr, wall
-
-        [t, pr, wall] = [wallCol(projectiles, cc.canvas.width, cc.canvas.height), minTime(projectiles)].sort(function(a, b) {
-            return ((a[0] == null) || Number.MAX_VALUE) > ((b[0] == null) || Number.MAX_VALUE)
-        })[0]
-
-        var event = {
-            t,    // Time of collision
-            pr,   // Projectiles involved
-            wall, // Wall (optional)
-            new_vels: []
-        }
-
-        projectiles.forEach(function(p) {
-            p.setPositionForTime(t)
-            p.setVelocityForTime(t)
-        })
-
-        if (wall) {
-            event.new_vels = resolveCollision(projectiles_map[pr[0]], null, wall)
-        } else {
-            event.new_vels = resolveCollision(projectiles_map[pr[0]], projectiles_map[pr[1]], null)
-        }
-
-        pr.forEach(function (p) {
-            projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
-        })
-
-        projectiles.forEach(function(p) {
-            p.captureAsInitialConditions()
-        })
-        // console.log(event)
-        events.push(event)
-
-        t_tot += event.t
-    // console.log(events)
-    }
-
-    // Reset to initial conditions
-    projectiles.forEach(function(p, i) {
-        var initial = projs_initial[i]
-        p.setVelocity(initial.vxi, initial.vyi)
-        p.setPosition(initial.x, initial.y)
-        p.captureAsInitialConditions()
-    })
-
-    // return events.sort(function(a, b) {return a.t < b.t})
-    return events
-}
 
 function start() {
     next_collision = calulateNextEvent()
-    // console.log(collisions)
-    // // Time
-    // lastFrame = new Date()
-    // deltaTime = 0
+
     startTime = new Date()
     lastFrame = new Date()
     time = 0 // (s)
@@ -206,8 +142,6 @@ function update() {
             projectiles_map[p].setVelocityForTime(time)
         })
     }
-
-    
 
     // Render background and projectiles
     render()
