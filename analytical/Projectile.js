@@ -10,6 +10,7 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Un
     this.mass = mass;
     this.radius = radius;
     this.name = name;
+    this.id = null
 
     console.log(`New ${this.color} projectile at (${this.pos.x}, ${this.pos.y}) with velocity (${this.vel.x}, ${this.vel.y})`);
 

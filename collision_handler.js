@@ -170,7 +170,7 @@ function wallCol(projectiles, width, height) {
     }
 
     if (time_col) {
-        return [time_col, [projectiles[colliding_proj]], colliding_wall]
+        return [time_col, [projectiles[colliding_proj].id], colliding_wall]
     } else {
         return [null, null, null]
     }
@@ -194,7 +194,7 @@ function minTime(projectiles) {
         }
     }
     if (time_col) {
-        return [time_col, [projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]], null]      
+        return [time_col, [projectiles[colliding_objects[0]].id, projectiles[colliding_objects[1]].id], null]      
     } else {
         return [null, null, null]
     }
