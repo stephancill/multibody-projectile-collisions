@@ -13,9 +13,9 @@ let current_collision = 0
 //     new Projectile({x: 450, y: 20, vxi: -40, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
 // ]
 var projectiles_map = {
-    0: new Projectile({x: 20, y: 20, vxi: 100, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
-    1: new Projectile({x: 420, y: 20, vxi: -1000, vyi: 0, color: "green", name: "Projectile 2", radius: 20}),
-    2: new Projectile({x: 979, y: 20, vxi: 100, vyi: 0, color: "blue", name: "Projectile 3", radius: 20})
+    0: new Projectile({x: 20, y: 20, vxi: 500, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
+    //1: new Projectile({x: 420, y: 20, vxi: -1000, vyi: 0, color: "green", name: "Projectile 2", radius: 20}),
+    1: new Projectile({x: 980, y: 20, vxi: -500, vyi: 0, color: "blue", name: "Projectile 3", radius: 20})
 }
 
 var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})
@@ -42,7 +42,7 @@ function addProjectile() {
 function calulateNextEvent() {
     var projs_initial = {}
     
-    Object.keys(projectiles_map).forEach(function(i) {
+    projectiles.forEach(function(i) {
         var p = projectiles_map[i]
         projs_initial[i] = {x: p.pos.x, y: p.pos.y, vxi: p.vel.x, vyi: p.vel.y, color: p.color} // TODO: Copy rest of properties
     })
@@ -50,7 +50,12 @@ function calulateNextEvent() {
     var t, pr, wall
     
     [t, pr, wall] = [wallCol(projectiles, cc.canvas.width, cc.canvas.height), minTime(projectiles)].sort(function(a, b) {
-        return (a[0] || Number.MAX_VALUE) > (b[0] || Number.MAX_VALUE)
+        var _a = a[0]
+        var _b = b[0]
+        if (_a === null) { _a = Number.MAX_VALUE }
+        if (_b === null) { _b = Number.MAX_VALUE } 
+        // console.log(_a, _b)
+        return _a > _b
     })[0]
 
     var event = {
@@ -72,7 +77,7 @@ function calulateNextEvent() {
     }
 
     pr.forEach(function (p, i) {
-        projectiles_map[p].setVelocity(event.new_vels[i].vx, event.new_vels[i].vy)
+        projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
     })
 
     projectiles.forEach(function(p) {
@@ -104,7 +109,7 @@ function calculateCollisionEvents(time_limit) {
         var t, pr, wall
 
         [t, pr, wall] = [wallCol(projectiles, cc.canvas.width, cc.canvas.height), minTime(projectiles)].sort(function(a, b) {
-            return (a[0] || Number.MAX_VALUE) > (b[0] || Number.MAX_VALUE)
+            return ((a[0] == null) || Number.MAX_VALUE) > ((b[0] == null) || Number.MAX_VALUE)
         })[0]
 
         var event = {
