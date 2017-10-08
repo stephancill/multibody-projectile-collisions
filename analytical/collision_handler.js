@@ -101,7 +101,7 @@ function resolveCollision(p1, p2, wall) {
 function wallCol(projectiles, width, height) {
     var time_col, colliding_wall, colliding_proj, time_new
     for (var i = 0; i < projectiles.length; i++) {
-        var proj = projectiles[i]
+        var proj = projectiles_map[projectiles[i]]
         if (proj.vel.x > 0) {
             time_new = (proj.radius + proj.pos.x - width)/-proj.vel.x
             if (time_new) {
@@ -170,7 +170,7 @@ function wallCol(projectiles, width, height) {
     }
 
     if (time_col) {
-        return [time_col, [projectiles[colliding_proj].id], colliding_wall]
+        return [time_col, [projectiles[colliding_proj]], colliding_wall]
     } else {
         return [null, null, null]
     }
@@ -180,7 +180,7 @@ function minTime(projectiles) {
     var colliding_objects, time_col
     for(var i = 0; i < projectiles.length-1; i++) {
         for (var j = i+1; j < projectiles.length; j++){
-            time_new = timeUntilCollision(projectiles[i], projectiles[j])
+            time_new = timeUntilCollision(projectiles_map[projectiles[i]], projectiles_map[projectiles[j]])
             if (time_new) {
                 if (time_col) {
                     if (time_new < time_col)
@@ -194,11 +194,10 @@ function minTime(projectiles) {
         }
     }
     if (time_col) {
-        return [time_col, [projectiles[colliding_objects[0]].id, projectiles[colliding_objects[1]].id], null]      
+        return [time_col, [projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]], null]      
     } else {
         return [null, null, null]
     }
-    
 }
 
 // def minTime(projectiles):
