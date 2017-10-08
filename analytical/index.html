@@ -41,7 +41,7 @@
 <!-- Dependencies -->
 <!-- <script src="./Equations.js" type="text/javascript"></script> -->
 <script src="./Projectile.js" type="text/javascript"></script>
-<script src="../collision_handler.js"></script>
+<script src="./collision_handler.js"></script>
 
 <!-- Main Script -->
 <script src="./scene.js" type="text/javascript"></script>
@@ -65,7 +65,7 @@ function togglePause() {
 window.onload = function () {
     c = document.getElementById("canvas");
     cc = c.getContext("2d");
-    // setInterval(update, 1000/60);
+
     render()
 
     // Set form min/max values
