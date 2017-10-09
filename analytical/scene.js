@@ -13,9 +13,9 @@ let current_collision = 0
 //     new Projectile({x: 450, y: 20, vxi: -40, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
 // ]
 var projectiles_map = {
-    0: new Projectile({x: 20, y: 20, vxi: 500, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
-    // 1: new Projectile({x: 420, y: 20, vxi: -1000, vyi: 0, color: "green", name: "Projectile 2", radius: 20}),
-    2: new Projectile({x: 980, y: 20, vxi: -500, vyi: 0, color: "blue", name: "Projectile 3", radius: 20})
+    0: new Projectile({x: 20, y: 20, vxi: -100, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
+    1: new Projectile({x: 60, y: 20, vxi: 0, vyi: 0, color: "green", name: "Projectile 2", radius: 20}),
+    2: new Projectile({x: 980, y: 20, vxi: 0, vyi: 0, color: "blue", name: "Projectile 3", radius: 20})
 }
 
 var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})
@@ -26,17 +26,17 @@ function addProjectile() {
     var vx = Number(document.getElementById("inputVelX").value)
     var vy = Number(document.getElementById("inputVelY").value)
     var color = document.getElementById("inputColor").value
-    console.log(px, py, vx, vy, color)
+    // console.log(px, py, vx, vy, color)
     // projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
     
     var p = new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color})
-    var i = Object.keys(projectiles_map).length-1
+    var i = Object.keys(projectiles_map).length
     p.id = i
     projectiles_map[i] = p
     projectiles.push(p)
 
     render()
-    updateLogging(force=true)
+    // updateLogging(force=true)
 }
 
 function calulateNextEvent() {
@@ -54,7 +54,6 @@ function calulateNextEvent() {
         var _b = b[0]
         if (_a === null) { _a = Number.MAX_VALUE }
         if (_b === null) { _b = Number.MAX_VALUE } 
-        console.log(_a, _b)
         return _a > _b
     })[0]
 
@@ -147,7 +146,7 @@ function update() {
     render()
 
     // Display statistics
-    updateLogging()
+    // updateLogging()
 }
 
 function render() {
@@ -167,24 +166,22 @@ function updateLogging(force=false) {
         <br>
         Time: ${Math.round(time*100)/100}s
     `
-
+    
     let projectileLog = ""
-    if (!stop || force) {
-        projectiles.forEach(p => {
-            projectileLog += `
-            <br><br>
-            <span>Name: ${p.name}</span>
-            <br>
-            <span>Position (mx, my): ${Math.round(p.pos.x*100)/100}, ${Math.round(p.pos.y*100)/100}</span>
-            <br>
-            <span>Velocity (m/s): ${Math.round(p.vel.x*100)/100}, ${Math.round(p.vel.y*100)/100}</span>
-            `
-        })
-        document.getElementById("projectiles").innerHTML = projectileLog
-        document.getElementById("projectiles").innerHTML += `
+    projectiles.forEach(i => {
+        projectileLog += `
+        <br><br>
+        <span>Name: ${projectile_map[i].name}</span>
         <br>
-        <span>Next collision time: ${Math.round(nextCollision.t*100)/100}s</span>
+        <span>Position (mx, my): ${Math.round(projectile_map[i].pos.x*100)/100}, ${Math.round(projectile_map[i].pos.y*100)/100}</span>
+        <br>
+        <span>Velocity (m/s): ${Math.round(projectile_map[i].vel.x*100)/100}, ${Math.round(projectile_map[i].vel.y*100)/100}</span>
         `
-    }
+    })
+    document.getElementById("projectiles").innerHTML = projectileLog
+    document.getElementById("projectiles").innerHTML += `
+    <br>
+    <span>Next collision time: ${Math.round(nextCollision.t*100)/100}s</span>
+    `
 
 }
