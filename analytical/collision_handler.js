@@ -1,5 +1,4 @@
 function roundToDecimalPlace(x, n) {
-	console.log(x, Math.round(x * Math.pow(10, n)) / Math.pow(10, n))
 	return Math.round(x * Math.pow(10, n)) / Math.pow(10, n)
 }
 
@@ -37,11 +36,11 @@ function solveQuad(a, b, c) {
 }
 
 function timeUntilCollision(p1, p2) {
-	X = p1.pos.x - p2.pos.x
-	Y = p1.pos.y - p2.pos.y
-	VX = p1.vel.x - p2.vel.x
-	VY = p1.vel.y - p2.vel.y
-	Rtot = p1.radius + p2.radius
+	X = roundToDecimalPlace(p1.pos.x - p2.pos.x,5)
+	Y = roundToDecimalPlace(p1.pos.y - p2.pos.y,5)
+	VX = roundToDecimalPlace(p1.vel.x - p2.vel.x,5)
+	VY = roundToDecimalPlace(p1.vel.y - p2.vel.y,5)
+	Rtot = roundToDecimalPlace(p1.radius + p2.radius,5)
 
 	a = Math.pow(VX,2) + Math.pow(VY,2)
 	b = 2*X*VX + 2*Y*VY
