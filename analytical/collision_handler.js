@@ -102,7 +102,7 @@ function resolveCollision(p1, p2, wall) {
 	var newvx2 = yu2*Math.sin(a)+u2*Math.cos(a)
 	var newvy2 = yu2*Math.cos(a)+u2*Math.sin(a)
 
-	
+
 	out[p1.id] = {vx: newvx1, vy: newvy1}
 	out[p2.id] =  {vx: newvx2, vy: newvy2}
 
@@ -162,9 +162,12 @@ function wallCol(projectiles, width, height) {
 			}
 		}
 
-		if (((proj.pos.y-proj.radius)!=0) && (proj.vel.y!=0)) {
-			time_new = solveQuad(0.5*g,proj.vel.y,-proj.radius+proj.pos.y)
+		if (((proj.pos.y-proj.radius)!=0) || (proj.vel.y!=0)) {
+			time_new = solveQuad(0.5*-9.8,proj.vel.y,-proj.radius+proj.pos.y)
 			if (time_new != null) {
+				var newt = time_new+Math.pow(10,-4)
+				var newp = proj.pos.y + newt*proj.vel.y + 0.5*-9.8*Math.pow(newt,2)
+				if (newp < proj.radius) {
 				if (time_col != null) {
 					if (time_new < time_col) {
 						time_col = time_new
@@ -175,6 +178,7 @@ function wallCol(projectiles, width, height) {
 					time_col = time_new
 					colliding_proj = i
 					colliding_wall = 'y'
+				}
 				}
 			}
 		}
@@ -197,7 +201,7 @@ function minTime(projectiles) {
 					if (time_new < time_col) {
 						time_col = time_new
 						colliding_objects = [i,j]
-					}	
+					}
 				} else {
 					time_col = time_new
 					colliding_objects = [i,j]
