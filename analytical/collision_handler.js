@@ -1,5 +1,4 @@
 function roundToDecimalPlace(x, n) {
-	console.log(x, Math.round(x * Math.pow(10, n)) / Math.pow(10, n))
 	return Math.round(x * Math.pow(10, n)) / Math.pow(10, n)
 }
 
@@ -37,11 +36,11 @@ function solveQuad(a, b, c) {
 }
 
 function timeUntilCollision(p1, p2) {
-	X = p1.pos.x - p2.pos.x
-	Y = p1.pos.y - p2.pos.y
-	VX = p1.vel.x - p2.vel.x
-	VY = p1.vel.y - p2.vel.y
-	Rtot = p1.radius + p2.radius
+	X = roundToDecimalPlace(p1.pos.x - p2.pos.x,5)
+	Y = roundToDecimalPlace(p1.pos.y - p2.pos.y,5)
+	VX = roundToDecimalPlace(p1.vel.x - p2.vel.x,5)
+	VY = roundToDecimalPlace(p1.vel.y - p2.vel.y,5)
+	Rtot = roundToDecimalPlace(p1.radius + p2.radius,5)
 
 	a = Math.pow(VX,2) + Math.pow(VY,2)
 	b = 2*X*VX + 2*Y*VY
@@ -213,47 +212,7 @@ function minTime(projectiles) {
 		return [null, null, null]
 	}
 }
-/*def minTime(projectiles):
-	colliding_objects = None
-	time_col = None
-	
-	for i in range(len(projectiles)-1):
-		for j in range(i+1,len(projectiles)):
-			time_new = timeUntilCollision(projectiles[i], projectiles[j])
-			if time_new != None:	
-				if time_col != None:	
-					if time_new < time_col:
-						time_col = time_new
-						colliding_objects = [i,j]
-				else:
-					time_col = time_new
-					colliding_objects = [i,j]
-					
-	if time_col != None:
-		return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
-	else:
-		return (None, None, None) */
 
-// def minTime(projectiles):
-// 	colliding_objects = None
-// 	time_col = None
-
-// 	for i in range(len(projectiles)-1):
-// 		for j in range(i+1,len(projectiles)):
-// 			time_new = timeUntilCollision(projectiles[i], projectiles[j])
-// 			if time_new != None:
-// 				if time_col != None:
-// 					if time_new < time_col:
-// 						time_col = time_new
-// 						colliding_objects = [i,j]
-// 				else:
-// 					time_col = time_new
-// 					colliding_objects = [i,j]
-
-// 	if time_col != None:
-// 		return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
-// 	else:
-// 		return (None, None, None)
 
 /*
 --------------------------------------------------------------
