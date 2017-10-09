@@ -11,12 +11,13 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Un
     this.radius = radius;
     this.name = name;
     this.id = null
+    this.G = -9.8
 
     console.log(`New ${this.color} projectile at (${this.pos.x}, ${this.pos.y}) with velocity (${this.vel.x}, ${this.vel.y})`);
 
     this.setVelocityForTime = function (t) {
         this.vel.x = this.vel.x;
-        // this.vel.y = this.vel.y + t * -9.8;
+        this.vel.y = this.vel.y + t * this.G;
     }
 
     // Set position given time
@@ -24,7 +25,7 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Un
         // dx(t) = Vi*t + 1/2 * a * t^2
         // console.log(t)
         this.pos.x = this.pos.xi + this.vel.x * t;
-        // this.pos.y = 1/2 * -9.8 * Math.pow(t, 2) + this.vel.y * t + this.pos.y;
+        this.pos.y = 1/2 * this.G * Math.pow(t, 2) + this.vel.y * t + this.pos.yi;
     }
 
     this.setVelocity = function (vx, vy) {
