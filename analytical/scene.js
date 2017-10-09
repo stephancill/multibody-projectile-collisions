@@ -18,9 +18,9 @@ let G = 0
 //     new Projectile({x: 450, y: 20, vxi: -40, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
 // ]
 var projectiles_map = {
-    0: new Projectile({x: 20, y: 20, vxi: 200, vyi: -20, color: "red", name: "Projectile 1", radius: 20}),
+    0: new Projectile({x: 20, y: 20, vxi: 100, vyi: -100, color: "red", name: "Projectile 1", radius: 20}),
     1: new Projectile({x: 60, y: 20, vxi: 0, vyi: 200, color: "green", name: "Projectile 2", radius: 20}),
-    2: new Projectile({x: 980, y: 20, vxi: -150, vyi: 0, color: "blue", name: "Projectile 3", radius: 20})
+    2: new Projectile({x: 20, y: 380, vxi: -100, vyi: 100, color: "blue", name: "Projectile 3", radius: 20})
 }
 
 var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})

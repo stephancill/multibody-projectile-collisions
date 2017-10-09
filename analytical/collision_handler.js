@@ -1,3 +1,5 @@
+let rd = 6
+
 function roundToDecimalPlace(x, n) {
 	return Math.round(x * Math.pow(10, n)) / Math.pow(10, n)
 }
@@ -36,11 +38,11 @@ function solveQuad(a, b, c) {
 }
 
 function timeUntilCollision(p1, p2) {
-	X = roundToDecimalPlace(p1.pos.x - p2.pos.x,5)
-	Y = roundToDecimalPlace(p1.pos.y - p2.pos.y,5)
-	VX = roundToDecimalPlace(p1.vel.x - p2.vel.x,5)
-	VY = roundToDecimalPlace(p1.vel.y - p2.vel.y,5)
-	Rtot = roundToDecimalPlace(p1.radius + p2.radius,5)
+	X = roundToDecimalPlace(p1.pos.x - p2.pos.x,rd)
+	Y = roundToDecimalPlace(p1.pos.y - p2.pos.y,rd)
+	VX = roundToDecimalPlace(p1.vel.x - p2.vel.x,rd)
+	VY = roundToDecimalPlace(p1.vel.y - p2.vel.y,rd)
+	Rtot = roundToDecimalPlace(p1.radius + p2.radius,rd)
 
 	a = Math.pow(VX,2) + Math.pow(VY,2)
 	b = 2*X*VX + 2*Y*VY
@@ -79,28 +81,30 @@ function resolveCollision(p1, p2, wall) {
 	var a
 
 	if (p1.pos.x == p2.pos.x) {
-		a = 0
+		a = Math.PI/2
 	} else {
 		a = Math.atan((p1.pos.y-p2.pos.y)/(p1.pos.x-p2.pos.x))
 	}
-
 	var m1 = p1.mass
 	var m2 = p2.mass
 
 	var v1 = Math.cos(a)*p1.vel.x + Math.sin(a)*p1.vel.y
 	var v2 = Math.cos(a)*p2.vel.x + Math.sin(a)*p2.vel.y
+	//console.log(v1,v2,'EINA0')
 
 	var u1 = (2*v2 + v1*m1/m2-v1)/(1+m1/m2)
 	var u2 = (2*v1 + v2*m2/m1-v2)/(1+m2/m1)
+	//console.log(u1,u2,'EINA1')
 
-	var yu1 = Math.cos(a)*p1.vel.y + Math.sin(a)*p1.vel.x
-	var yu2 = Math.cos(a)*p2.vel.y + Math.sin(a)*p2.vel.x
+	var remv1 = Math.cos(a)*p1.vel.y - Math.sin(a)*p1.vel.x
+	var remv2 = Math.cos(a)*p2.vel.y - Math.sin(a)*p2.vel.x
+	//console.log(remv1,remv2,'EINA2')
 
-	var newvx1 = yu1*Math.sin(a)+u1*Math.cos(a)
-	var newvy1 = yu1*Math.cos(a)+u1*Math.sin(a)
+	var newvx1 = roundToDecimalPlace(-remv1*Math.sin(a)+u1*Math.cos(a),rd)
+	var newvy1 = roundToDecimalPlace(remv1*Math.cos(a)+u1*Math.sin(a),rd)
 
-	var newvx2 = yu2*Math.sin(a)+u2*Math.cos(a)
-	var newvy2 = yu2*Math.cos(a)+u2*Math.sin(a)
+	var newvx2 = roundToDecimalPlace(-remv2*Math.sin(a)+u2*Math.cos(a),rd)
+	var newvy2 = roundToDecimalPlace(remv2*Math.cos(a)+u2*Math.sin(a),rd)
 
 
 	out[p1.id] = {vx: newvx1, vy: newvy1}
@@ -185,7 +189,7 @@ function wallCol(projectiles, width, height) {
 	}
 	// console.log(time_col,'WALL')
 	if (time_col != null) {
-		return [Math.abs(roundToDecimalPlace(time_col, 5)), [projectiles[colliding_proj]], colliding_wall]
+		return [Math.abs(roundToDecimalPlace(time_col, rd)), [projectiles[colliding_proj]], colliding_wall]
 	} else {
 		return [null, null, null]
 	}
@@ -211,7 +215,7 @@ function minTime(projectiles) {
 	}
 
 	if (time_col != null) {
-		return [Math.abs(roundToDecimalPlace(time_col, 5)), [projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]], null]
+		return [Math.abs(roundToDecimalPlace(time_col, rd)), [projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]], null]
 	} else {
 		return [null, null, null]
 	}
