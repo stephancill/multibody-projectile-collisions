@@ -7,7 +7,7 @@
     <body>
         <canvas id="canvas" width="1000" height="400"></canvas>
         <br>
-        <button id="start"type="button" name="button">Start</button>
+        <button id="start"type="button" name="button">Start</button><button id="fun">Load fun</button>
         <form id="newProjectileForm" onsubmit="return false">
             <br>
             <span><strong>Add projectile:</strong></span>
@@ -39,18 +39,21 @@
     </body>
 </html>
 <!-- Dependencies -->
-<!-- <script src="./Equations.js" type="text/javascript"></script> -->
-<script src="./Projectile.js" type="text/javascript"></script>
-<script src="./collision_handler.js"></script>
+<script>var cc, rect;</script>
+<script src="./scripts/Projectile.js" type="text/javascript"></script>
+<script src="./scripts/collision_handler.js"></script>
 
 <!-- Main Script -->
-<script src="./scene.js" type="text/javascript"></script>
+<script src="./scripts/scene.js" type="text/javascript"></script>
 
 <!-- Canvas controller -->
 <script type="text/javascript">
 
 var selectPosition = false
-var rect = null
+
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
 window.onload = function () {
     c = document.getElementById("canvas");
@@ -65,22 +68,10 @@ window.onload = function () {
     document.getElementById("inputPosY").min = 0
     document.getElementById("inputPosY").max = rect.bottom
 
-    /* Uncomment for fun */
-    //var colors = ["white", "green", "purple", "blue", "red"]
-    // for(var i = 25; i < cc.canvas.width-20; i+=61) {
-    //     for(var j = 25; j < cc.canvas.height-20; j+=61) {
-    //         if (i % 10 == 0) {
-    //             var p = new Projectile({x: i, y: cc.canvas.height - j, vxi: Math.random()*1000, vyi: Math.random()*1000, color: colors[j%colors.length], radius: 25})
-    //             addProjectile(id=null, p)
-    //         }
-            
-    //     }
-    // }
 }
 
 canvas.addEventListener('click', function(evt) {
     if (selectPosition) {
-        var rect = c.getBoundingClientRect();
         mousePos = {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
@@ -94,9 +85,31 @@ canvas.addEventListener('click', function(evt) {
     selectPosition = false
 });
 
+// Add event listener for `click` events.
+canvas.addEventListener('click', function(event) {
+    var elem = c,
+    elemLeft = elem.offsetLeft,
+    elemTop = elem.offsetTop
+    
+    var x = event.pageX - elemLeft,
+        y = event.pageY - elemTop;
+
+    // Collision detection between clicked offset and element.
+    projectiles.forEach(function(i) {
+        var pos = projectiles_map[i].pos,
+        r = projectiles_map[i].radius
+        if (x > pos.x-r && x < pos.x+r
+            && y > pos.y-r && y < pos.y+r) {
+            alert('clicked an element');
+        }
+    });
+
+}, false);
+
 // Form events
 // document.getElementById("stop").addEventListener("click", togglePause)
 document.getElementById("start").addEventListener("click", start)
 document.getElementById("addProjectileButton").addEventListener("click", addProjectile)
+document.getElementById("fun").addEventListener("click", fun)
 
 </script>

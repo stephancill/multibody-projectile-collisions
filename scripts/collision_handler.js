@@ -1,9 +1,20 @@
 let rd = 6
 
+/**
+ * Round float x to n decimal places
+ * @param {Float} x - Number to round
+ * @param {Integer} n - Decimal places
+ */
 function roundToDecimalPlace(x, n) {
 	return Math.round(x * Math.pow(10, n)) / Math.pow(10, n)
 }
 
+/**
+ * Solve a quadratic equation
+ * @param {Number} a 
+ * @param {Number} b 
+ * @param {Number} c 
+ */
 function solveQuad(a, b, c) {
 	if (a == 0) {
 		if (b == 0) {
@@ -21,12 +32,13 @@ function solveQuad(a, b, c) {
 		}
 	}
 	else {
-		if (Math.pow(b, 2)-4*a*c < 0) {
+		var deltar = Math.pow(b, 2)-4*a*c
+		if (deltar < 0) {
 			return null
-		} else if (Math.pow(b, 2)-4*a*c == 0) {
+		} else if (deltar == 0) {
 			return -b/(2*a)
 		} else {
-			var times = [(-b+Math.pow((Math.pow(b, 2)-4*a*c),0.5))/(2*a),(-b-Math.pow((Math.pow(b, 2)-4*a*c),0.5))/(2*a)].filter(function (x) { return x >= 0 } )
+			var times = [(-b+Math.pow((deltar),0.5))/(2*a),(-b-Math.pow((deltar),0.5))/(2*a)].filter(function (x) { return x >= 0 } )
 			if (times.length > 0) {
 				return Math.min(...times)
 			} else {
@@ -37,6 +49,12 @@ function solveQuad(a, b, c) {
 	}
 }
 
+/**
+ * Return the time of the next collision between p1 and p2 or null
+ * @param {Projectile} p1
+ * @param {Projectile} p2 
+ * @returns {Number || null} - Time of collision between p1 and p2
+ */
 function timeUntilCollision(p1, p2) {
 	X = roundToDecimalPlace(p1.pos.x - p2.pos.x,rd)
 	Y = roundToDecimalPlace(p1.pos.y - p2.pos.y,rd)
@@ -49,11 +67,10 @@ function timeUntilCollision(p1, p2) {
 	c = Math.pow(X,2) + Math.pow(Y,2) - Math.pow(Rtot,2)
 
 	t = solveQuad(a,b,c)
-//   console.log(t,p1,'POES')
+
 	if (t != null) {
 		var newt = t+Math.pow(10,-4)
 		var dist = Math.pow((X + VX*(newt)),2) + Math.pow((Y + VY*newt),2)
-		// this is to check if they collide by simulating their positions 10**-4 s after "collision"
 		if (dist < Math.pow(Rtot, 2)) {
 			return t
 		} else {
@@ -64,6 +81,14 @@ function timeUntilCollision(p1, p2) {
 	}
 }
 
+/**
+ * Returns new velocities of colliding projectiles p1 and p2 
+ * or p1 and a wall after colliding
+ * @param {Projectile} p1 
+ * @param {Projectile} p2 
+ * @param {String} wall - "x" or "y" describing axis of collision
+ * @returns {Integer: {vx, vy}} - {ID: {x vel, y vel}}
+ */
 function resolveCollision(p1, p2, wall) {
 	var out = {}
 
@@ -113,6 +138,13 @@ function resolveCollision(p1, p2, wall) {
 	return out
 }
 
+/**
+ * Returns soonest time of the next wall collision
+ * @param {[String]} projectiles - Array of Projectile IDs
+ * @param {Integer} width - Width of scene
+ * @param {Integer} height - Height of scene
+ * @returns {Number, [String], String} - [time, Array of projectile IDs, wall]
+ */
 function wallCol(projectiles, width, height) {
 	var time_col, colliding_wall, colliding_proj, time_new
 	for (var i = 0; i < projectiles.length; i++) {
@@ -187,7 +219,6 @@ function wallCol(projectiles, width, height) {
 			}
 		}
 	}
-	// console.log(time_col,'WALL')
 	if (time_col != null) {
 		return [Math.abs(roundToDecimalPlace(time_col, rd)), [projectiles[colliding_proj]], colliding_wall]
 	} else {
@@ -195,6 +226,10 @@ function wallCol(projectiles, width, height) {
 	}
 }
 
+/**
+ * Calculates and returns the time of the next pair of colliding projectiles
+ * @param {Array of String} projectiles - Projectile IDs
+ */
 function minTime(projectiles) {
 	var colliding_objects, time_col
 	for(var i = 0; i < projectiles.length-1; i++) {
@@ -233,35 +268,3 @@ Cycle
 5. Step 1
 */
 
-// Example:
-
-/*
-var p1 = new Projectile({x: 5, y: 5, vxi: 1, vyi: 0, color: "red", name: "Projectile 1"})
-var p2 = new Projectile({x: 20, y: 5, vxi: -2, vyi: 0, color: "red", name: "Projectile 2"})
-
-var projs = [p1, p2]
-
-var t, pr, wall
-
-console.log('\n');
-
-for(var i = 0; i < 10; i++) {
-	[t, pr, wall] = [wallCol(projs, 200, 400), minTime(projs)].sort(function(a, b) {return (a[0] || Number.MAX_VALUE) > (b[0] || Number.MAX_VALUE)})[0]
-
-	console.log("Time until next collision: ", t, wall, wall ? pr.name : "");
-	console.log("Velocities: ", p1.vel, p2.vel);
-	projs.map(function(p) {
-		p.setPositionForTime(t)
-		p.setVelocityForTime(t)
-	})
-	console.log("Positions at collision time: ", p1.pos, p2.pos)
-
-	if (wall) {
-		resolveCollision([pr], null, wall)
-	} else {
-		resolveCollision(pr[0], pr[1], null)
-	}
-	console.log("Velocities after collision: ", p1.vel, p2.vel);
-	console.log('\n');
-}
-*/

@@ -3,51 +3,76 @@ let lastFrame = null
 let deltaTime = 0
 let startTime = null
 let time = 0 // (s)
+let time_total = 0
 let stop = false
 let pause = false
 
 // Collisions
 let next_collision = null
-let current_collision = 0
 
 // Constants
-let G = 0
+let G = -100
 
-var projectiles_map = {
-    0: new Projectile({x: 20, y: 20, vxi: 100, vyi: -100, color: "red", name: "Projectile 1", radius: 20}),
-    1: new Projectile({x: 60, y: 20, vxi: 0, vyi: 200, color: "green", name: "Projectile 2", radius: 20}),
-    2: new Projectile({x: 20, y: 380, vxi: -100, vyi: 100, color: "blue", name: "Projectile 3", radius: 20})
+// Programmatically added projectiles
+var projectiles_to_add = [
+    new Projectile({x: 40, y: 40, vxi: 150, vyi: -300, color: "red", radius: 40, mass: 40}),
+    new Projectile({x: 490, y: 200, vxi: 0, vyi: 200, color: "green", radius: 20, mass: 20}),
+    new Projectile({x: 20, y: 380, vxi: -100, vyi: 250, color: "blue", radius: 10, mass: 10})
+]
+
+var projectiles_map = {}
+var projectiles = []
+
+// Add programmatically added projectiles
+for (var i = 0; i < projectiles_to_add.length; i++) {
+    addProjectile(projectiles_to_add[i])
 }
 
-var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})
+// Clear queue
+projectiles_to_add = []
 
-
-function addProjectile(id, pr) {
+/**
+ * Add, register projectile to the scene and render
+ * @param {Projectile} pr 
+ * @param {String} id 
+ */
+function addProjectile(pr, id) {
     var p = pr
+    
+    // Instantiate new Projectile from GUI
     if (!p) {
         var px = Number(document.getElementById("inputPosX").value)
         var py = Number(document.getElementById("inputPosY").value)
         var vx = Number(document.getElementById("inputVelX").value)
         var vy = Number(document.getElementById("inputVelY").value)
         var color = document.getElementById("inputColor").value
-    
+
         p = new Projectile({x: px, y: cc.canvas.height - py, vxi: vx, vyi: vy, color: color, radius: 20})
     }
-    
+
+    // Set or assign new ID
     if (id) {
-        p.id = id
+        p.setID(id)
         projectiles_map[id] = p
         projectiles.push(id)
     } else {
         var i = Object.keys(projectiles_map).length
-        p.id = i
+        p.setID(i)
         projectiles_map[i] = p
         projectiles.push(i)
     }
 
-    render()
+    // Render the new projectile if canvas is available
+    if (cc) {
+        p.render(cc)
+    }
 }
 
+/**
+ * Calculates and returns an event object that contains 
+ * information about the next collision event
+ * @returns {{Float, [Projectile], String, {ID: {vx, vy}}}}
+ */
 function calulateNextEvent() {
     var projs_initial = {}
 
@@ -104,25 +129,31 @@ function calulateNextEvent() {
     return event
 }
 
-
+/**
+ * Start the simulation
+ */
 function start() {
     next_collision = calulateNextEvent()
 
     startTime = new Date()
     lastFrame = new Date()
     time = 0 // (s)
-    current_collision = 0
+    time_total = 0
 
     stop = false
-    setInterval(update, 1000/60)
+    setInterval(update, 1000/120)
 }
 
+/**
+ * Called on ever frame update
+ */
 function update() {
     // Time calculation
     deltaTime = new Date() - lastFrame
     lastFrame = new Date()
     if (!stop) {
         time += deltaTime / 1000
+        time_total += deltaTime / 1000
 
         if (time >= next_collision.t) {
             var event = next_collision
@@ -162,9 +193,12 @@ function update() {
     render()
 
     // Display statistics
-    // updateLogging()
+    updateLogging(projectiles_map, projectiles)
 }
 
+/**
+ * Render scene and all projectiles
+ */
 function render() {
     // Render background
     cc.fillStyle = "black"
@@ -176,11 +210,18 @@ function render() {
     })
 }
 
-function updateLogging(force=false) {
+/**
+ * Update information about scene and projectiles
+ * @param {{ID: Projectile}} projectile_map - Hashmap of projectiles
+ * @param {[String]} projectiles - Array of Projectile IDs
+ */
+function updateLogging(projectile_map, projectiles) {
     document.getElementById("time").innerHTML = `
         Frame delta: ${deltaTime}ms
         <br>
-        Time: ${Math.round(time*100)/100}s
+        Time: ${Math.round(time_total*100)/100}s
+        <br>
+        Next collision in ${next_collision.t}s between ${next_collision.pr.length === 1 ? `ID ${next_collision.pr[0]} and wall` : `ID ${next_collision.pr[0]} and ID ${next_collision.pr[1]}`}
     `
 
     let projectileLog = ""
@@ -196,8 +237,23 @@ function updateLogging(force=false) {
     })
     document.getElementById("projectiles").innerHTML = projectileLog
     document.getElementById("projectiles").innerHTML += `
-    <br>
-    <span>Next collision time: ${Math.round(nextCollision.t*100)/100}s</span>
     `
 
+}
+
+/**
+ * Fill the scene with projectiles with a random size, velocity and color
+ */
+function fun() {
+    projectiles_map = {}
+    projectiles = []
+    render()
+    var colors = ["green", "purple", "blue", "red", "yellow"]
+    
+    for(var i = 25; i < cc.canvas.width-20; i+=100) {
+        for(var j = 25; j < cc.canvas.height-20; j+=100) {
+           var p = new Projectile({x: i, y: cc.canvas.height - j, vxi: getRandomArbitrary(-5000, 5000), vyi: getRandomArbitrary(-5000, 5000), color: colors[Math.round(getRandomArbitrary(0, colors.length-1))], radius: getRandomArbitrary(5, 25)})
+           addProjectile(p)
+        }
+    }
 }
