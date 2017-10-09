@@ -21,12 +21,13 @@ function solveQuad(a, b, c) {
 		}
 	}
 	else {
-		if (Math.pow(b, 2)-4*a*c < 0) {
+		var deltar = Math.pow(b, 2)-4*a*c
+		if (deltar < 0) {
 			return null
-		} else if (Math.pow(b, 2)-4*a*c == 0) {
+		} else if (deltar == 0) {
 			return -b/(2*a)
 		} else {
-			var times = [(-b+Math.pow((Math.pow(b, 2)-4*a*c),0.5))/(2*a),(-b-Math.pow((Math.pow(b, 2)-4*a*c),0.5))/(2*a)].filter(function (x) { return x >= 0 } )
+			var times = [(-b+Math.pow((deltar),0.5))/(2*a),(-b-Math.pow((deltar),0.5))/(2*a)].filter(function (x) { return x >= 0 } )
 			if (times.length > 0) {
 				return Math.min(...times)
 			} else {
@@ -151,6 +152,7 @@ function wallCol(projectiles, width, height) {
 
 		if (proj.vel.y > 0) {
 			time_new = solveQuad(0.5*G,proj.vel.y,proj.radius+proj.pos.y-height)
+			console.log(time_new,'ceiling');
 			if (time_new != null) {
 				if (time_col != null) {
 					if (time_new < time_col) {
@@ -187,7 +189,7 @@ function wallCol(projectiles, width, height) {
 			}
 		}
 	}
-	// console.log(time_col,'WALL')
+	console.log(time_col,'WALL')
 	if (time_col != null) {
 		return [Math.abs(roundToDecimalPlace(time_col, rd)), [projectiles[colliding_proj]], colliding_wall]
 	} else {
