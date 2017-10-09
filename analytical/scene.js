@@ -14,9 +14,9 @@ let current_collision = 0
 let G = -10
 
 var projectiles_map = {
-  //  0: new Projectile({x: 20, y: 20, vxi: 100, vyi: -100, color: "red", name: "Projectile 1", radius: 20}),
-    1: new Projectile({x: 490, y: 200, vxi: 0, vyi: 0, color: "green", name: "Projectile 2", radius: 20}),
-  //  2: new Projectile({x: 20, y: 380, vxi: -100, vyi: 100, color: "blue", name: "Projectile 3", radius: 20})
+    0: new Projectile({x: 40, y: 40, vxi: 150, vyi: -300, color: "red", name: "Projectile 1", radius: 40}),
+    1: new Projectile({x: 490, y: 200, vxi: 0, vyi: 200, color: "green", name: "Projectile 2", radius: 20}),
+    2: new Projectile({x: 20, y: 380, vxi: -100, vyi: 250, color: "blue", name: "Projectile 3", radius: 10})
 }
 
 var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})

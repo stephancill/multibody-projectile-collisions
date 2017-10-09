@@ -66,16 +66,16 @@ window.onload = function () {
     document.getElementById("inputPosY").max = rect.bottom
 
     /* Uncomment for fun */
-    //var colors = ["white", "green", "purple", "blue", "red"]
-    // for(var i = 25; i < cc.canvas.width-20; i+=61) {
-    //     for(var j = 25; j < cc.canvas.height-20; j+=61) {
-    //         if (i % 10 == 0) {
-    //             var p = new Projectile({x: i, y: cc.canvas.height - j, vxi: Math.random()*1000, vyi: Math.random()*1000, color: colors[j%colors.length], radius: 25})
-    //             addProjectile(id=null, p)
-    //         }
-            
-    //     }
-    // }
+    var colors = ["white", "green", "purple", "blue", "red"]
+     for(var i = 25; i < cc.canvas.width-20; i+=61) {
+         for(var j = 25; j < cc.canvas.height-20; j+=61) {
+             if (i % 10 == 0) {
+                 var p = new Projectile({x: i, y: cc.canvas.height - j, vxi: Math.random()*1000, vyi: Math.random()*1000, color: colors[j%colors.length], radius: 25})
+                 addProjectile(id=null, p)
+             }
+
+         }
+     }
 }
 
 canvas.addEventListener('click', function(evt) {

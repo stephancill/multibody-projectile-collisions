@@ -27,7 +27,7 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Un
         // console.log(t)
         this.pos.x = this.pos.xi + this.vel.x * t;
         if (((this.pos.y-this.radius)!=0) || (this.vel.y!=0)) {
-            this.pos.y = 1/2 * G * Math.pow(t, 2) + this.vel.y * t + this.pos.yi
+            this.pos.y = 1/2 * -G * Math.pow(t, 2) + this.vel.y * t + this.pos.yi
         }
     }
 
