@@ -213,47 +213,7 @@ function minTime(projectiles) {
 		return [null, null, null]
 	}
 }
-/*def minTime(projectiles):
-	colliding_objects = None
-	time_col = None
-	
-	for i in range(len(projectiles)-1):
-		for j in range(i+1,len(projectiles)):
-			time_new = timeUntilCollision(projectiles[i], projectiles[j])
-			if time_new != None:	
-				if time_col != None:	
-					if time_new < time_col:
-						time_col = time_new
-						colliding_objects = [i,j]
-				else:
-					time_col = time_new
-					colliding_objects = [i,j]
-					
-	if time_col != None:
-		return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
-	else:
-		return (None, None, None) */
 
-// def minTime(projectiles):
-// 	colliding_objects = None
-// 	time_col = None
-
-// 	for i in range(len(projectiles)-1):
-// 		for j in range(i+1,len(projectiles)):
-// 			time_new = timeUntilCollision(projectiles[i], projectiles[j])
-// 			if time_new != None:
-// 				if time_col != None:
-// 					if time_new < time_col:
-// 						time_col = time_new
-// 						colliding_objects = [i,j]
-// 				else:
-// 					time_col = time_new
-// 					colliding_objects = [i,j]
-
-// 	if time_col != None:
-// 		return (time_col, (projectiles[colliding_objects[0]], projectiles[colliding_objects[1]]), None)
-// 	else:
-// 		return (None, None, None)
 
 /*
 --------------------------------------------------------------
