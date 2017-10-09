@@ -146,7 +146,7 @@ function wallCol(projectiles, width, height) {
 		}
 
 		if (proj.vel.y > 0) {
-			time_new = solveQuad(0.5*-9.8,proj.vel.y,proj.radius+proj.pos.y-height)
+			time_new = solveQuad(0.5*G,proj.vel.y,proj.radius+proj.pos.y-height)
 			if (time_new != null) {
 				if (time_col != null) {
 					if (time_new < time_col) {
@@ -163,10 +163,10 @@ function wallCol(projectiles, width, height) {
 		}
 
 		if (((proj.pos.y-proj.radius)!=0) || (proj.vel.y!=0)) {
-			time_new = solveQuad(0.5*-9.8,proj.vel.y,-proj.radius+proj.pos.y)
+			time_new = solveQuad(0.5*G,proj.vel.y,-proj.radius+proj.pos.y)
 			if (time_new != null) {
 				var newt = time_new+Math.pow(10,-4)
-				var newp = proj.pos.y + newt*proj.vel.y + 0.5*-9.8*Math.pow(newt,2)
+				var newp = proj.pos.y + newt*proj.vel.y + 0.5*G*Math.pow(newt,2)
 				if (newp < proj.radius) {
 				if (time_col != null) {
 					if (time_new < time_col) {
