@@ -13,10 +13,6 @@ let current_collision = 0
 // Constants
 let G = 0
 
-// var projectiles = [
-//     new Projectile({x: 25, y: 20, vxi: 100, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
-//     new Projectile({x: 450, y: 20, vxi: -40, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
-// ]
 var projectiles_map = {
     0: new Projectile({x: 20, y: 20, vxi: 100, vyi: -100, color: "red", name: "Projectile 1", radius: 20}),
     1: new Projectile({x: 60, y: 20, vxi: 0, vyi: 200, color: "green", name: "Projectile 2", radius: 20}),
@@ -25,23 +21,31 @@ var projectiles_map = {
 
 var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})
 
-function addProjectile() {
-    var px = Number(document.getElementById("inputPosX").value)
-    var py = Number(document.getElementById("inputPosY").value)
-    var vx = Number(document.getElementById("inputVelX").value)
-    var vy = Number(document.getElementById("inputVelY").value)
-    var color = document.getElementById("inputColor").value
-    // console.log(px, py, vx, vy, color)
-    // projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
 
-    var p = new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color})
-    var i = Object.keys(projectiles_map).length
-    p.id = i
-    projectiles_map[i] = p
-    projectiles.push(p)
+function addProjectile(id, pr) {
+    var p = pr
+    if (!p) {
+        var px = Number(document.getElementById("inputPosX").value)
+        var py = Number(document.getElementById("inputPosY").value)
+        var vx = Number(document.getElementById("inputVelX").value)
+        var vy = Number(document.getElementById("inputVelY").value)
+        var color = document.getElementById("inputColor").value
+    
+        p = new Projectile({x: px, y: cc.canvas.height - py, vxi: vx, vyi: vy, color: color, radius: 20})
+    }
+    
+    if (id) {
+        p.id = id
+        projectiles_map[id] = p
+        projectiles.push(id)
+    } else {
+        var i = Object.keys(projectiles_map).length
+        p.id = i
+        projectiles_map[i] = p
+        projectiles.push(i)
+    }
 
     render()
-    // updateLogging(force=true)
 }
 
 function calulateNextEvent() {

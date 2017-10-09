@@ -48,19 +48,9 @@
 
 <!-- Canvas controller -->
 <script type="text/javascript">
-// var stop = true
-var selectPosition = false
-var started = false
-var rect = null
 
-function togglePause() {
-    stop = !stop;
-    stop ? this.innerHTML = "Play" : this.innerHTML = "Pause";
-    if (!started) {
-        document.getElementById("newProjectileForm").enabled = false
-    }
-    started = true
-}
+var selectPosition = false
+var rect = null
 
 window.onload = function () {
     c = document.getElementById("canvas");
@@ -74,6 +64,18 @@ window.onload = function () {
     document.getElementById("inputPosX").max = rect.right
     document.getElementById("inputPosY").min = 0
     document.getElementById("inputPosY").max = rect.bottom
+
+    /* Uncomment for fun */
+    //var colors = ["white", "green", "purple", "blue", "red"]
+    // for(var i = 25; i < cc.canvas.width-20; i+=61) {
+    //     for(var j = 25; j < cc.canvas.height-20; j+=61) {
+    //         if (i % 10 == 0) {
+    //             var p = new Projectile({x: i, y: cc.canvas.height - j, vxi: Math.random()*1000, vyi: Math.random()*1000, color: colors[j%colors.length], radius: 25})
+    //             addProjectile(id=null, p)
+    //         }
+            
+    //     }
+    // }
 }
 
 canvas.addEventListener('click', function(evt) {

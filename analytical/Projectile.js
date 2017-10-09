@@ -17,8 +17,8 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, name="Un
     this.setVelocityForTime = function (t) {
         this.vel.x = this.vel.x;
         if (((this.pos.y-this.radius)!=0) || (this.vel.y!=0)) {
-        this.vel.y = this.vel.y + t * G;
-      }
+            this.vel.y = this.vel.yi + t * G
+        }
     }
 
     // Set position given time
