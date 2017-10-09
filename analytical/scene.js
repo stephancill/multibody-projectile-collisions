@@ -4,58 +4,65 @@ let deltaTime = 0
 let startTime = null
 let time = 0 // (s)
 let stop = false
+let pause = false
 
 // Collisions
 let next_collision = null
 let current_collision = 0
 
+// Constants
+let G = 0
 
-// var projectiles = [
-//     new Projectile({x: 25, y: 20, vxi: 100, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
-//     new Projectile({x: 450, y: 20, vxi: -40, vyi: 0, color: "green", name: "Projectile 2", radius: 20})
-// ]
 var projectiles_map = {
-    0: new Projectile({x: 20, y: 20, vxi: 200, vyi: 0, color: "red", name: "Projectile 1", radius: 20}),
-    1: new Projectile({x: 60, y: 20, vxi: 100, vyi: 0, color: "green", name: "Projectile 2", radius: 20}),
-    2: new Projectile({x: 980, y: 20, vxi: 0, vyi: 0, color: "blue", name: "Projectile 3", radius: 20})
+    0: new Projectile({x: 20, y: 20, vxi: 100, vyi: -100, color: "red", name: "Projectile 1", radius: 20}),
+    1: new Projectile({x: 60, y: 20, vxi: 0, vyi: 200, color: "green", name: "Projectile 2", radius: 20}),
+    2: new Projectile({x: 20, y: 380, vxi: -100, vyi: 100, color: "blue", name: "Projectile 3", radius: 20})
 }
 
 var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})
 
-function addProjectile() {
-    var px = Number(document.getElementById("inputPosX").value)
-    var py = Number(document.getElementById("inputPosY").value)
-    var vx = Number(document.getElementById("inputVelX").value)
-    var vy = Number(document.getElementById("inputVelY").value)
-    var color = document.getElementById("inputColor").value
-    // console.log(px, py, vx, vy, color)
-    // projectiles.push(new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color}))
+
+function addProjectile(id, pr) {
+    var p = pr
+    if (!p) {
+        var px = Number(document.getElementById("inputPosX").value)
+        var py = Number(document.getElementById("inputPosY").value)
+        var vx = Number(document.getElementById("inputVelX").value)
+        var vy = Number(document.getElementById("inputVelY").value)
+        var color = document.getElementById("inputColor").value
     
-    var p = new Projectile({x: px, y: py, vxi: vx, vyi: vy, color: color})
-    var i = Object.keys(projectiles_map).length
-    p.id = i
-    projectiles_map[i] = p
-    projectiles.push(p)
+        p = new Projectile({x: px, y: cc.canvas.height - py, vxi: vx, vyi: vy, color: color, radius: 20})
+    }
+    
+    if (id) {
+        p.id = id
+        projectiles_map[id] = p
+        projectiles.push(id)
+    } else {
+        var i = Object.keys(projectiles_map).length
+        p.id = i
+        projectiles_map[i] = p
+        projectiles.push(i)
+    }
 
     render()
-    // updateLogging(force=true)
 }
 
 function calulateNextEvent() {
     var projs_initial = {}
-    
+
     projectiles.forEach(function(i) {
         var p = projectiles_map[i]
         projs_initial[i] = {x: p.pos.x, y: p.pos.y, vxi: p.vel.x, vyi: p.vel.y, color: p.color} // TODO: Copy rest of properties
     })
 
     var t, pr, wall
-    
+
     [t, pr, wall] = [wallCol(projectiles, cc.canvas.width, cc.canvas.height), minTime(projectiles)].sort(function(a, b) {
         var _a = a[0]
         var _b = b[0]
         if (_a === null) { _a = Number.MAX_VALUE }
-        if (_b === null) { _b = Number.MAX_VALUE } 
+        if (_b === null) { _b = Number.MAX_VALUE }
         return _a > _b
     })[0]
 
@@ -105,9 +112,9 @@ function start() {
     lastFrame = new Date()
     time = 0 // (s)
     current_collision = 0
-    
+
     stop = false
-    setInterval(update, 1000/60)   
+    setInterval(update, 1000/60)
 }
 
 function update() {
@@ -116,30 +123,32 @@ function update() {
     lastFrame = new Date()
     if (!stop) {
         time += deltaTime / 1000
-        
+
         if (time >= next_collision.t) {
             var event = next_collision
-            
+
             time = event.t
             console.log(event)
-            
+
             projectiles.forEach(function(p) {
                 projectiles_map[p].setPositionForTime(event.t)
                 projectiles_map[p].setVelocityForTime(event.t)
             })
-    
+
             event.pr.forEach(function (p) {
                 projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
             })
-    
+
             projectiles.forEach(function(p) {
                 projectiles_map[p].captureAsInitialConditions()
             })
-    
+
             time = 0
-    
+
             next_collision = calulateNextEvent()
-            stop = true
+            if (pause) {
+              stop = true
+            }
         } else {
             projectiles.forEach(function(p) {
                 projectiles_map[p].setPositionForTime(time)
@@ -147,7 +156,7 @@ function update() {
             })
         }
     }
-   
+
 
     // Render background and projectiles
     render()
@@ -173,7 +182,7 @@ function updateLogging(force=false) {
         <br>
         Time: ${Math.round(time*100)/100}s
     `
-    
+
     let projectileLog = ""
     projectiles.forEach(i => {
         projectileLog += `
