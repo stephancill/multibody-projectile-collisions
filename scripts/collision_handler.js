@@ -1,9 +1,20 @@
 let rd = 6
 
+/**
+ * Round float x to n decimal places
+ * @param {Float} x - Number to round
+ * @param {Integer} n - Decimal places
+ */
 function roundToDecimalPlace(x, n) {
 	return Math.round(x * Math.pow(10, n)) / Math.pow(10, n)
 }
 
+/**
+ * Solve a quadratic equation
+ * @param {Number} a 
+ * @param {Number} b 
+ * @param {Number} c 
+ */
 function solveQuad(a, b, c) {
 	if (a == 0) {
 		if (b == 0) {
@@ -38,6 +49,12 @@ function solveQuad(a, b, c) {
 	}
 }
 
+/**
+ * Return the time of the next collision between p1 and p2 or null
+ * @param {Projectile} p1
+ * @param {Projectile} p2 
+ * @returns {Number || null} - Time of collision between p1 and p2
+ */
 function timeUntilCollision(p1, p2) {
 	X = roundToDecimalPlace(p1.pos.x - p2.pos.x,rd)
 	Y = roundToDecimalPlace(p1.pos.y - p2.pos.y,rd)
@@ -50,11 +67,10 @@ function timeUntilCollision(p1, p2) {
 	c = Math.pow(X,2) + Math.pow(Y,2) - Math.pow(Rtot,2)
 
 	t = solveQuad(a,b,c)
-//   console.log(t,p1,'POES')
+
 	if (t != null) {
 		var newt = t+Math.pow(10,-4)
 		var dist = Math.pow((X + VX*(newt)),2) + Math.pow((Y + VY*newt),2)
-		// this is to check if they collide by simulating their positions 10**-4 s after "collision"
 		if (dist < Math.pow(Rtot, 2)) {
 			return t
 		} else {
@@ -65,6 +81,14 @@ function timeUntilCollision(p1, p2) {
 	}
 }
 
+/**
+ * Returns new velocities of colliding projectiles p1 and p2 
+ * or p1 and a wall after colliding
+ * @param {Projectile} p1 
+ * @param {Projectile} p2 
+ * @param {String} wall - "x" or "y" describing axis of collision
+ * @returns {Integer: {vx, vy}} - {ID: {x vel, y vel}}
+ */
 function resolveCollision(p1, p2, wall) {
 	var out = {}
 
@@ -114,6 +138,13 @@ function resolveCollision(p1, p2, wall) {
 	return out
 }
 
+/**
+ * Returns soonest time of the next wall collision
+ * @param {[String]} projectiles - Array of Projectile IDs
+ * @param {Integer} width - Width of scene
+ * @param {Integer} height - Height of scene
+ * @returns {Number, [String], String} - [time, Array of projectile IDs, wall]
+ */
 function wallCol(projectiles, width, height) {
 	var time_col, colliding_wall, colliding_proj, time_new
 	for (var i = 0; i < projectiles.length; i++) {
@@ -195,6 +226,10 @@ function wallCol(projectiles, width, height) {
 	}
 }
 
+/**
+ * Calculates and returns the time of the next pair of colliding projectiles
+ * @param {Array of String} projectiles - Projectile IDs
+ */
 function minTime(projectiles) {
 	var colliding_objects, time_col
 	for(var i = 0; i < projectiles.length-1; i++) {

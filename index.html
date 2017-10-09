@@ -39,18 +39,17 @@
     </body>
 </html>
 <!-- Dependencies -->
-<!-- <script src="./Equations.js" type="text/javascript"></script> -->
-<script src="./Projectile.js" type="text/javascript"></script>
-<script src="./collision_handler.js"></script>
+<script>var cc, rect;</script>
+<script src="./scripts/Projectile.js" type="text/javascript"></script>
+<script src="./scripts/collision_handler.js"></script>
 
 <!-- Main Script -->
-<script src="./scene.js" type="text/javascript"></script>
+<script src="./scripts/scene.js" type="text/javascript"></script>
 
 <!-- Canvas controller -->
 <script type="text/javascript">
 
 var selectPosition = false
-var rect = null
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
@@ -73,7 +72,6 @@ window.onload = function () {
 
 canvas.addEventListener('click', function(evt) {
     if (selectPosition) {
-        var rect = c.getBoundingClientRect();
         mousePos = {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
@@ -86,6 +84,27 @@ canvas.addEventListener('click', function(evt) {
     }
     selectPosition = false
 });
+
+// Add event listener for `click` events.
+canvas.addEventListener('click', function(event) {
+    var elem = c,
+    elemLeft = elem.offsetLeft,
+    elemTop = elem.offsetTop
+    
+    var x = event.pageX - elemLeft,
+        y = event.pageY - elemTop;
+
+    // Collision detection between clicked offset and element.
+    projectiles.forEach(function(i) {
+        var pos = projectiles_map[i].pos,
+        r = projectiles_map[i].radius
+        if (x > pos.x-r && x < pos.x+r
+            && y > pos.y-r && y < pos.y+r) {
+            alert('clicked an element');
+        }
+    });
+
+}, false);
 
 // Form events
 // document.getElementById("stop").addEventListener("click", togglePause)
