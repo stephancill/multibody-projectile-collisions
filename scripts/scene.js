@@ -11,7 +11,7 @@ let next_collision = null
 let current_collision = 0
 
 // Constants
-let G = -10
+let G = -100
 
 var projectiles_map = {
     0: new Projectile({x: 40, y: 40, vxi: 150, vyi: -300, color: "red", name: "Projectile 1", radius: 40}),
@@ -20,7 +20,6 @@ var projectiles_map = {
 }
 
 var projectiles = Object.keys(projectiles_map).map(function (i) {projectiles_map[i].id = i; return i})
-
 
 function addProjectile(id, pr) {
     var p = pr
@@ -114,7 +113,7 @@ function start() {
     current_collision = 0
 
     stop = false
-    setInterval(update, 1000/60)
+    setInterval(update, 1000/120)
 }
 
 function update() {
@@ -162,7 +161,7 @@ function update() {
     render()
 
     // Display statistics
-    // updateLogging()
+    updateLogging(projectiles_map, projectiles)
 }
 
 function render() {
@@ -176,7 +175,7 @@ function render() {
     })
 }
 
-function updateLogging(force=false) {
+function updateLogging(projectile_map, projectiles) {
     document.getElementById("time").innerHTML = `
         Frame delta: ${deltaTime}ms
         <br>
@@ -196,8 +195,19 @@ function updateLogging(force=false) {
     })
     document.getElementById("projectiles").innerHTML = projectileLog
     document.getElementById("projectiles").innerHTML += `
-    <br>
-    <span>Next collision time: ${Math.round(nextCollision.t*100)/100}s</span>
     `
 
+}
+
+function fun() {
+    projectiles_map = {}
+    projectiles = []
+    var colors = ["white", "green", "purple", "blue", "red"]
+    
+    for(var i = 25; i < cc.canvas.width-20; i+=100) {
+        for(var j = 25; j < cc.canvas.height-20; j+=100) {
+           var p = new Projectile({x: i, y: cc.canvas.height - j, vxi: getRandomArbitrary(-5000, 5000), vyi: getRandomArbitrary(-5000, 5000), color: colors[Math.round(getRandomArbitrary(0, 5))], radius: getRandomArbitrary(5, 25)})
+           addProjectile(id=null, p)
+        }
+    }
 }

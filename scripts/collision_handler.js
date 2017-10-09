@@ -152,7 +152,6 @@ function wallCol(projectiles, width, height) {
 
 		if (proj.vel.y > 0) {
 			time_new = solveQuad(0.5*G,proj.vel.y,proj.radius+proj.pos.y-height)
-			console.log(time_new,'ceiling');
 			if (time_new != null) {
 				if (time_col != null) {
 					if (time_new < time_col) {
@@ -189,7 +188,6 @@ function wallCol(projectiles, width, height) {
 			}
 		}
 	}
-	console.log(time_col,'WALL')
 	if (time_col != null) {
 		return [Math.abs(roundToDecimalPlace(time_col, rd)), [projectiles[colliding_proj]], colliding_wall]
 	} else {
@@ -235,35 +233,3 @@ Cycle
 5. Step 1
 */
 
-// Example:
-
-/*
-var p1 = new Projectile({x: 5, y: 5, vxi: 1, vyi: 0, color: "red", name: "Projectile 1"})
-var p2 = new Projectile({x: 20, y: 5, vxi: -2, vyi: 0, color: "red", name: "Projectile 2"})
-
-var projs = [p1, p2]
-
-var t, pr, wall
-
-console.log('\n');
-
-for(var i = 0; i < 10; i++) {
-	[t, pr, wall] = [wallCol(projs, 200, 400), minTime(projs)].sort(function(a, b) {return (a[0] || Number.MAX_VALUE) > (b[0] || Number.MAX_VALUE)})[0]
-
-	console.log("Time until next collision: ", t, wall, wall ? pr.name : "");
-	console.log("Velocities: ", p1.vel, p2.vel);
-	projs.map(function(p) {
-		p.setPositionForTime(t)
-		p.setVelocityForTime(t)
-	})
-	console.log("Positions at collision time: ", p1.pos, p2.pos)
-
-	if (wall) {
-		resolveCollision([pr], null, wall)
-	} else {
-		resolveCollision(pr[0], pr[1], null)
-	}
-	console.log("Velocities after collision: ", p1.vel, p2.vel);
-	console.log('\n');
-}
-*/
