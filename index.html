@@ -4,10 +4,18 @@
         <meta charset="utf-8">
         <title>Physics</title>
     </head>
-    <body>
-        <canvas id="canvas" width="1000" height="400"></canvas>
+    <body id="grad">
+        <div id="center">
+            <h1>Simulation of Projectile Motion and Collisions in 2D Space</h1>
+            <h3>Stephan Cilliers, Emile Tredoux</h3>
+            <canvas id="canvas" width="1000" height="400"></canvas>
+            <div style="margin-top: 20px">
+                <button id="start"type="button" name="button">Start</button><button id="fun">Load fun</button>
+            </div>
+               
+        </div>
         <br>
-        <button id="start"type="button" name="button">Start</button><button id="fun">Load fun</button>
+        
         <form id="newProjectileForm" onsubmit="return false">
             <br>
             <span><strong>Add projectile:</strong></span>
@@ -113,3 +121,18 @@ document.getElementById("addProjectileButton").addEventListener("click", addProj
 document.getElementById("fun").addEventListener("click", fun)
 
 </script>
+<style>
+#grad {
+    height: 98.4vh;
+    width: 98vw;
+    background: linear-gradient(to bottom right, #24C6DC, #514A9D); /* Standard syntax */
+}
+
+#center {
+    display: flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+</style>

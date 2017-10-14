@@ -200,6 +200,9 @@ function update() {
  * Render scene and all projectiles
  */
 function render() {
+    cc.canvas.width  = window.innerWidth - 40;
+    cc.canvas.height = window.innerHeight/2
+
     // Render background
     cc.fillStyle = "black"
     cc.fillRect(0, 0, cc.canvas.width, cc.canvas.height)
