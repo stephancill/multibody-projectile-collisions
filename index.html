@@ -25,7 +25,7 @@
             <canvas id="canvas" width="1000" height="400" style="margin-top: 20px"></canvas>
             <div style="margin-top: 20px; text-align: right;">
                 <button id="start" type="button" class="bttn-simple bttn-md">Start</button>
-                <button id="reset" class="bttn-simple bttn-md">Reset</button>
+                <!-- <button id="reset" class="bttn-simple bttn-md">Reset</button> -->
                 <button id="load" class="bttn-simple bttn-md">Load Preset</button>
                 <select id="presets"> </select>
             </div>
@@ -83,12 +83,22 @@ function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+function playButtonPressed() {
+    if (startTime) {
+        document.getElementById("start").innerHTML = "Start"
+        reset()
+    } else {
+        document.getElementById("start").innerHTML = "Reset"
+        start()
+    }
+}
+
 window.onload = function () {
-    c = document.getElementById("canvas");
-    cc = c.getContext("2d");
+    c = document.getElementById("canvas")
+    cc = c.getContext("2d")
 
     // Set form min/max values
-    rect = c.getBoundingClientRect();
+    rect = c.getBoundingClientRect()
     document.getElementById("inputPosX").min = 0
     document.getElementById("inputPosX").max = rect.right
     document.getElementById("inputPosY").min = 0
@@ -119,10 +129,47 @@ window.onresize = function() {
     document.getElementById("inputPosY").max = rect.bottom
 }
 
+canvas.addEventListener('click', function(evt) {
+    if (selectPosition) {
+        mousePos = {
+            x: evt.pageX - canvas.offsetLeft,
+            y: evt.pageY - canvas.offsetTop
+        };
+        document.getElementById("inputPosX").value = mousePos.x
+        document.getElementById("inputPosY").value = mousePos.y
+        addProjectile(evt)
+        console.log(mousePos);
+    }
+    selectPosition = false
+});
+
+canvas.onmousemove = function (evt) {
+    if (selectPosition) {
+        render()
+        
+        var x = evt.pageX - canvas.offsetLeft
+        var y = evt.pageY - canvas.offsetTop
+
+        // Render cross
+        cc.beginPath()
+        cc.moveTo(x,y)
+        cc.lineTo(x,y-5)
+        cc.moveTo(x,y)
+        cc.lineTo(x,y+5)
+        cc.moveTo(x,y)
+        cc.lineTo(x-5,y)
+        cc.moveTo(x,y)
+        cc.lineTo(x+5,y)
+        cc.strokeStyle = "white"
+        cc.stroke()
+        cc.closePath()
+    }
+} 
+
 // Form events
-document.getElementById("start").addEventListener("click", start)
+document.getElementById("start").addEventListener("click", playButtonPressed)
 document.getElementById("addProjectileButton").addEventListener("click", addProjectile)
-document.getElementById("reset").addEventListener("click", reset)
+// document.getElementById("reset").addEventListener("click", reset)
 document.getElementById("load").addEventListener("click", loadScene)
 
 </script>

@@ -26,7 +26,7 @@ var current_preset = null
  */
 function addProjectile(pr, id) {
     var p = pr
-
+    console.log(p)
     if (p.type) {
         p = null
     }
@@ -179,7 +179,7 @@ function update() {
         time += deltaTime / 1000
         time_total += deltaTime / 1000
 
-        // Handle collision if due
+        // Check if collision is due
         if (time >= next_collision.t) {
             var event = next_collision
 
