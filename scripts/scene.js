@@ -1,35 +1,23 @@
 // Time
-let lastFrame = null
-let deltaTime = 0
-let startTime = null
-let time = 0 // (s)
-let time_total = 0
-let stop = false
-let pause = false
+var lastFrame = null
+var deltaTime = 0
+var startTime = null
+var time = 0 // (s)
+var time_total = 0
+var stop = false
+var pause = false
+var timer_id
 
 // Collisions
-let next_collision = null
+var next_collision = null
 
 // Constants
-let G = -100
+var G = -100
 
 // Programmatically added projectiles
-var projectiles_to_add = [
-    new Projectile({x: 40, y: 40, vxi: 150, vyi: -300, color: "red", radius: 40, mass: 40}),
-    new Projectile({x: 490, y: 200, vxi: 0, vyi: 200, color: "green", radius: 20, mass: 20}),
-    new Projectile({x: 20, y: 380, vxi: -100, vyi: 250, color: "blue", radius: 10, mass: 10})
-]
+var projectiles_to_add = [], projectiles_map = {}, projectiles =[]
 
-var projectiles_map = {}
-var projectiles = []
-
-// Add programmatically added projectiles
-for (var i = 0; i < projectiles_to_add.length; i++) {
-    addProjectile(projectiles_to_add[i])
-}
-
-// Clear queue
-projectiles_to_add = []
+var current_preset = null
 
 /**
  * Add, register projectile to the scene and render
@@ -38,6 +26,10 @@ projectiles_to_add = []
  */
 function addProjectile(pr, id) {
     var p = pr
+
+    if (p.type) {
+        p = null
+    }
     
     // Instantiate new Projectile from GUI
     if (!p) {
@@ -133,17 +125,47 @@ function calulateNextEvent() {
  * Start the simulation
  */
 function start() {
-    next_collision = calulateNextEvent()
 
-    startTime = new Date()
-    lastFrame = new Date()
-    time = 0 // (s)
-    time_total = 0
+    // Check if not already started
+    if (!startTime) {
+        next_collision = calulateNextEvent()
+        
+        startTime = new Date()
+        lastFrame = new Date()
+        time = 0 // (s)
+        time_total = 0
+    
+        stop = false
+        timer_id = setInterval(update, 1000/120)
 
-    stop = false
-    setInterval(update, 1000/120)
+        document.getElementById("load").disabled = true
+    }
+    
 }
 
+function reset() {
+    // Cancel update
+    clearInterval(timer_id)
+    
+    // Enable preset load button
+    document.getElementById("load").disabled = false
+
+    // Time
+    lastFrame = null
+    deltaTime = 0
+    startTime = null
+    time = 0 // (s)
+    time_total = 0
+    stop = false
+    pause = false
+
+    // Collisions
+    next_collision = null
+
+    // Load the selected preset
+    loadScene(current_preset)
+
+}
 /**
  * Called on ever frame update
  */
@@ -200,6 +222,9 @@ function update() {
  * Render scene and all projectiles
  */
 function render() {
+    cc.canvas.width  = window.innerWidth - 40;
+    cc.canvas.height = window.innerHeight/2
+
     // Render background
     cc.fillStyle = "black"
     cc.fillRect(0, 0, cc.canvas.width, cc.canvas.height)
@@ -208,6 +233,9 @@ function render() {
     projectiles.forEach(function (i) {
         projectiles_map[i].render(cc)
     })
+
+    // Update on-canvas logging
+    updateCanvasLogging(cc)
 }
 
 /**
@@ -216,15 +244,8 @@ function render() {
  * @param {[String]} projectiles - Array of Projectile IDs
  */
 function updateLogging(projectile_map, projectiles) {
-    document.getElementById("time").innerHTML = `
-        Frame delta: ${deltaTime}ms
-        <br>
-        Time: ${Math.round(time_total*100)/100}s
-        <br>
-        Next collision in ${next_collision.t}s between ${next_collision.pr.length === 1 ? `ID ${next_collision.pr[0]} and wall` : `ID ${next_collision.pr[0]} and ID ${next_collision.pr[1]}`}
-    `
 
-    let projectileLog = ""
+    var projectileLog = ""
     projectiles.forEach(i => {
         projectileLog += `
         <br><br>
@@ -236,24 +257,58 @@ function updateLogging(projectile_map, projectiles) {
         `
     })
     document.getElementById("projectiles").innerHTML = projectileLog
-    document.getElementById("projectiles").innerHTML += `
-    `
-
 }
 
 /**
- * Fill the scene with projectiles with a random size, velocity and color
+ * Update information about time and collisions on the canvas scene
+ * @param {Canvas} cc 
  */
-function fun() {
+function updateCanvasLogging(cc) {
+    // Time
+    cc.fillStyle = "white"
+    cc.font = "14px Arial";
+    cc.fillText(`Time: ${Math.round(time_total*100)/100}s`, 5, 15);
+
+    // Next collision
+    if (next_collision) {
+        var description = `Next collision in ${next_collision.t}s between ${next_collision.pr.length === 1 ? `ID ${next_collision.pr[0]} and wall` : `ID ${next_collision.pr[0]} and ID ${next_collision.pr[1]}`}`
+        cc.fillText(description, 5, 29);
+    }
+    
+    // Delta time
+    cc.fillText(`Δ${deltaTime}ms`, cc.canvas.width - 50, cc.canvas.height - 12)
+}
+
+/**
+ * Load a preset from Presets.js
+ * @param {String} name - Preset identifier 
+ */
+function loadScene(name="default") {
+    if (!name) {
+        render()
+        return
+    }
+
+     // Prevent mouse event from being passed
+     if (name.type) {
+        name = document.getElementById("presets").value
+    }
+
+    // Programmatically added projectiles
+    console.log(Presets[name])
+    projectiles_to_add = Presets[name]()
+    current_preset = name
+
     projectiles_map = {}
     projectiles = []
-    render()
-    var colors = ["green", "purple", "blue", "red", "yellow"]
-    
-    for(var i = 25; i < cc.canvas.width-20; i+=100) {
-        for(var j = 25; j < cc.canvas.height-20; j+=100) {
-           var p = new Projectile({x: i, y: cc.canvas.height - j, vxi: getRandomArbitrary(-5000, 5000), vyi: getRandomArbitrary(-5000, 5000), color: colors[Math.round(getRandomArbitrary(0, colors.length-1))], radius: getRandomArbitrary(5, 25)})
-           addProjectile(p)
-        }
+
+    // Add programmatically added projectiles
+    for (var i = 0; i < projectiles_to_add.length; i++) {
+        addProjectile(projectiles_to_add[i])
     }
+
+    // Clear queue
+    projectiles_to_add = []
+
+    render()
 }

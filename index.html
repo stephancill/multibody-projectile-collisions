@@ -2,12 +2,37 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Physics</title>
+        <title>Gr 11 Physics</title>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     </head>
-    <body>
-        <canvas id="canvas" width="1000" height="400"></canvas>
+    <body id="grad">
+        <div id="center-col">
+            <h1>Simulation of Projectile Motion and Collisions in 2D Space</h1>
+            <div id="center-row">
+                <div class="name">
+                    Stephan Cilliers <br>
+                    Parklands College <br>
+                    Cape Town, South Africa
+                    scilliers@parklands.co.za
+                </div>
+                <div class="name">
+                    Emile Tredoux <br>
+                    Parklands College <br>
+                    Cape Town, South Africa
+                    etredoux@parklands.co.za
+                </div>
+            </div>
+            <canvas id="canvas" width="1000" height="400" style="margin-top: 20px"></canvas>
+            <div style="margin-top: 20px; text-align: right;">
+                <button id="start" type="button" class="bttn-simple bttn-md">Start</button>
+                <button id="reset" class="bttn-simple bttn-md">Reset</button>
+                <button id="load" class="bttn-simple bttn-md">Load Preset</button>
+                <select id="presets"> </select>
+            </div>
+               
+        </div>
         <br>
-        <button id="start"type="button" name="button">Start</button><button id="fun">Load fun</button>
+
         <form id="newProjectileForm" onsubmit="return false">
             <br>
             <span><strong>Add projectile:</strong></span>
@@ -31,17 +56,20 @@
             <br>
             <br>
         </form>
+
         <div id="logging" class="logging">
-            <span id="time">0ms</span>
             <div id="projectiles" class=""></div>
         </div>
 
     </body>
 </html>
+<link rel="stylesheet" href="./css/style.css">
+
 <!-- Dependencies -->
 <script>var cc, rect;</script>
 <script src="./scripts/Projectile.js" type="text/javascript"></script>
 <script src="./scripts/collision_handler.js"></script>
+<script src="./scripts/Presets.js"></script>
 
 <!-- Main Script -->
 <script src="./scripts/scene.js" type="text/javascript"></script>
@@ -59,8 +87,6 @@ window.onload = function () {
     c = document.getElementById("canvas");
     cc = c.getContext("2d");
 
-    render()
-
     // Set form min/max values
     rect = c.getBoundingClientRect();
     document.getElementById("inputPosX").min = 0
@@ -68,48 +94,35 @@ window.onload = function () {
     document.getElementById("inputPosY").min = 0
     document.getElementById("inputPosY").max = rect.bottom
 
+    // Populate presets
+    var html = ``
+   
+    for (var key in Presets) {
+        if (Presets.hasOwnProperty(key)) {
+            html += `<option value="${key}">${key}</option>`
+        }
+    }
+
+    document.getElementById("presets").innerHTML = html
+
+    reset()
 }
 
-canvas.addEventListener('click', function(evt) {
-    if (selectPosition) {
-        mousePos = {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
-        };
-        document.getElementById("inputPosX").value = mousePos.x
-        document.getElementById("inputPosY").value = mousePos.y
-        addProjectile()
-
-        console.log(mousePos);
-    }
-    selectPosition = false
-});
-
-// Add event listener for `click` events.
-canvas.addEventListener('click', function(event) {
-    var elem = c,
-    elemLeft = elem.offsetLeft,
-    elemTop = elem.offsetTop
+window.onresize = function() {
+    render()
     
-    var x = event.pageX - elemLeft,
-        y = event.pageY - elemTop;
-
-    // Collision detection between clicked offset and element.
-    projectiles.forEach(function(i) {
-        var pos = projectiles_map[i].pos,
-        r = projectiles_map[i].radius
-        if (x > pos.x-r && x < pos.x+r
-            && y > pos.y-r && y < pos.y+r) {
-            alert('clicked an element');
-        }
-    });
-
-}, false);
+    // Set form min/max values
+    rect = c.getBoundingClientRect();
+    document.getElementById("inputPosX").min = 0
+    document.getElementById("inputPosX").max = rect.right
+    document.getElementById("inputPosY").min = 0
+    document.getElementById("inputPosY").max = rect.bottom
+}
 
 // Form events
-// document.getElementById("stop").addEventListener("click", togglePause)
 document.getElementById("start").addEventListener("click", start)
 document.getElementById("addProjectileButton").addEventListener("click", addProjectile)
-document.getElementById("fun").addEventListener("click", fun)
+document.getElementById("reset").addEventListener("click", reset)
+document.getElementById("load").addEventListener("click", loadScene)
 
 </script>
