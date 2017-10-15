@@ -173,36 +173,47 @@ function update() {
     // Time calculation
     deltaTime = new Date() - lastFrame
     lastFrame = new Date()
+    
     if (!stop) {
+        // Update time
         time += deltaTime / 1000
         time_total += deltaTime / 1000
 
+        // Handle collision if due
         if (time >= next_collision.t) {
             var event = next_collision
 
+            // Set time to exact time of collision
             time = event.t
             console.log(event)
 
+            // Correct each projectile's position and velocity for the time of collision
             projectiles.forEach(function(p) {
                 projectiles_map[p].setPositionForTime(event.t)
                 projectiles_map[p].setVelocityForTime(event.t)
             })
 
+            // Update the projectiles involved in the collision's velocities
             event.pr.forEach(function (p) {
                 projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
             })
 
+            // Capture each projectile's current velocity and position as its initial conditions
             projectiles.forEach(function(p) {
                 projectiles_map[p].captureAsInitialConditions()
             })
 
+            // Set the time to 0
             time = 0
 
+            // Calculate the next collision
             next_collision = calulateNextEvent()
+            
             if (pause) {
               stop = true
             }
         } else {
+            // Simulate projectile's motion
             projectiles.forEach(function(p) {
                 projectiles_map[p].setPositionForTime(time)
                 projectiles_map[p].setVelocityForTime(time)
