@@ -8,7 +8,6 @@ var stop = false
 var pause = false
 var timer_id
 
-
 // Collisions
 var next_collision = null
 
@@ -16,22 +15,9 @@ var next_collision = null
 var G = -100
 
 // Programmatically added projectiles
-var projectiles_to_add = [
-    new Projectile({x: 40, y: 40, vxi: 150, vyi: -300, color: "red", radius: 40, mass: 40}),
-    new Projectile({x: 490, y: 200, vxi: 0, vyi: 200, color: "green", radius: 20, mass: 20}),
-    new Projectile({x: 20, y: 380, vxi: -100, vyi: 250, color: "blue", radius: 10, mass: 10})
-]
+var projectiles_to_add = [], projectiles_map = {}, projectiles =[]
 
-var projectiles_map = {}
-var projectiles = []
-
-// Add programmatically added projectiles
-for (var i = 0; i < projectiles_to_add.length; i++) {
-    addProjectile(projectiles_to_add[i])
-}
-
-// Clear queue
-projectiles_to_add = []
+var current_preset = null
 
 /**
  * Add, register projectile to the scene and render
@@ -40,6 +26,10 @@ projectiles_to_add = []
  */
 function addProjectile(pr, id) {
     var p = pr
+
+    if (p.type) {
+        p = null
+    }
     
     // Instantiate new Projectile from GUI
     if (!p) {
@@ -147,6 +137,8 @@ function start() {
     
         stop = false
         timer_id = setInterval(update, 1000/120)
+
+        document.getElementById("load").disabled = true
     }
     
 }
@@ -155,6 +147,9 @@ function reset() {
     // Cancel update
     clearInterval(timer_id)
     
+    // Enable preset load button
+    document.getElementById("load").disabled = false
+
     // Time
     lastFrame = null
     deltaTime = 0
@@ -167,26 +162,9 @@ function reset() {
     // Collisions
     next_collision = null
 
+    // Load the selected preset
+    loadScene(current_preset)
 
-    // Programmatically added projectiles
-    projectiles_to_add = [
-        new Projectile({x: 40, y: 40, vxi: 150, vyi: -300, color: "red", radius: 40, mass: 40}),
-        new Projectile({x: 490, y: 200, vxi: 0, vyi: 200, color: "green", radius: 20, mass: 20}),
-        new Projectile({x: 20, y: 380, vxi: -100, vyi: 250, color: "blue", radius: 10, mass: 10})
-    ]
-
-    projectiles_map = {}
-    projectiles = []
-
-    // Add programmatically added projectiles
-    for (var i = 0; i < projectiles_to_add.length; i++) {
-        addProjectile(projectiles_to_add[i])
-    }
-
-    // Clear queue
-    projectiles_to_add = []
-
-    render()
 }
 /**
  * Called on ever frame update
@@ -302,18 +280,35 @@ function updateCanvasLogging(cc) {
 }
 
 /**
- * Fill the scene with projectiles with a random size, velocity and color
+ * Load a preset from Presets.js
+ * @param {String} name - Preset identifier 
  */
-function fun() {
+function loadScene(name="default") {
+    if (!name) {
+        render()
+        return
+    }
+
+     // Prevent mouse event from being passed
+     if (name.type) {
+        name = document.getElementById("presets").value
+    }
+
+    // Programmatically added projectiles
+    console.log(Presets[name])
+    projectiles_to_add = Presets[name]()
+    current_preset = name
+
     projectiles_map = {}
     projectiles = []
-    render()
-    var colors = ["green", "purple", "blue", "red", "yellow"]
-    
-    for(var i = 25; i < cc.canvas.width-20; i+=100) {
-        for(var j = 25; j < cc.canvas.height-20; j+=100) {
-           var p = new Projectile({x: i, y: cc.canvas.height - j, vxi: getRandomArbitrary(-5000, 5000), vyi: getRandomArbitrary(-5000, 5000), color: colors[Math.round(getRandomArbitrary(0, colors.length-1))], radius: getRandomArbitrary(5, 25)})
-           addProjectile(p)
-        }
+
+    // Add programmatically added projectiles
+    for (var i = 0; i < projectiles_to_add.length; i++) {
+        addProjectile(projectiles_to_add[i])
     }
+
+    // Clear queue
+    projectiles_to_add = []
+
+    render()
 }
