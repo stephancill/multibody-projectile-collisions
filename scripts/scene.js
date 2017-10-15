@@ -1,17 +1,19 @@
 // Time
-let lastFrame = null
-let deltaTime = 0
-let startTime = null
-let time = 0 // (s)
-let time_total = 0
-let stop = false
-let pause = false
+var lastFrame = null
+var deltaTime = 0
+var startTime = null
+var time = 0 // (s)
+var time_total = 0
+var stop = false
+var pause = false
+var timer_id
+
 
 // Collisions
-let next_collision = null
+var next_collision = null
 
 // Constants
-let G = -100
+var G = -100
 
 // Programmatically added projectiles
 var projectiles_to_add = [
@@ -133,17 +135,59 @@ function calulateNextEvent() {
  * Start the simulation
  */
 function start() {
-    next_collision = calulateNextEvent()
 
-    startTime = new Date()
-    lastFrame = new Date()
-    time = 0 // (s)
-    time_total = 0
-
-    stop = false
-    setInterval(update, 1000/120)
+    // Check if not already started
+    if (!startTime) {
+        next_collision = calulateNextEvent()
+        
+        startTime = new Date()
+        lastFrame = new Date()
+        time = 0 // (s)
+        time_total = 0
+    
+        stop = false
+        timer_id = setInterval(update, 1000/120)
+    }
+    
 }
 
+function reset() {
+    // Cancel update
+    clearInterval(timer_id)
+    
+    // Time
+    lastFrame = null
+    deltaTime = 0
+    startTime = null
+    time = 0 // (s)
+    time_total = 0
+    stop = false
+    pause = false
+
+    // Collisions
+    next_collision = null
+
+
+    // Programmatically added projectiles
+    projectiles_to_add = [
+        new Projectile({x: 40, y: 40, vxi: 150, vyi: -300, color: "red", radius: 40, mass: 40}),
+        new Projectile({x: 490, y: 200, vxi: 0, vyi: 200, color: "green", radius: 20, mass: 20}),
+        new Projectile({x: 20, y: 380, vxi: -100, vyi: 250, color: "blue", radius: 10, mass: 10})
+    ]
+
+    projectiles_map = {}
+    projectiles = []
+
+    // Add programmatically added projectiles
+    for (var i = 0; i < projectiles_to_add.length; i++) {
+        addProjectile(projectiles_to_add[i])
+    }
+
+    // Clear queue
+    projectiles_to_add = []
+
+    render()
+}
 /**
  * Called on ever frame update
  */
@@ -211,6 +255,9 @@ function render() {
     projectiles.forEach(function (i) {
         projectiles_map[i].render(cc)
     })
+
+    // Update on-canvas logging
+    updateCanvasLogging(cc)
 }
 
 /**
@@ -219,15 +266,8 @@ function render() {
  * @param {[String]} projectiles - Array of Projectile IDs
  */
 function updateLogging(projectile_map, projectiles) {
-    document.getElementById("time").innerHTML = `
-        Frame delta: ${deltaTime}ms
-        <br>
-        Time: ${Math.round(time_total*100)/100}s
-        <br>
-        Next collision in ${next_collision.t}s between ${next_collision.pr.length === 1 ? `ID ${next_collision.pr[0]} and wall` : `ID ${next_collision.pr[0]} and ID ${next_collision.pr[1]}`}
-    `
 
-    let projectileLog = ""
+    var projectileLog = ""
     projectiles.forEach(i => {
         projectileLog += `
         <br><br>
@@ -239,9 +279,26 @@ function updateLogging(projectile_map, projectiles) {
         `
     })
     document.getElementById("projectiles").innerHTML = projectileLog
-    document.getElementById("projectiles").innerHTML += `
-    `
+}
 
+/**
+ * Update information about time and collisions on the canvas scene
+ * @param {Canvas} cc 
+ */
+function updateCanvasLogging(cc) {
+    // Time
+    cc.fillStyle = "white"
+    cc.font = "14px Arial";
+    cc.fillText(`Time: ${Math.round(time_total*100)/100}s`, 5, 15);
+
+    // Next collision
+    if (next_collision) {
+        var description = `Next collision in ${next_collision.t}s between ${next_collision.pr.length === 1 ? `ID ${next_collision.pr[0]} and wall` : `ID ${next_collision.pr[0]} and ID ${next_collision.pr[1]}`}`
+        cc.fillText(description, 5, 29);
+    }
+    
+    // Delta time
+    cc.fillText(`Δ${deltaTime}ms`, cc.canvas.width - 50, cc.canvas.height - 12)
 }
 
 /**
