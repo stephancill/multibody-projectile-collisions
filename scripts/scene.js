@@ -361,6 +361,18 @@ function projComparison() {
     Pcol = (p1.pos.x-(p1.pos.x-p2.pos.x)/(p1.radius+p2.radius)*p1.radius,p1.pos.y-(p1.pos.y-p2.pos.y)/(p1.radius+p2.radius)*p1.radius)
     }
 
-    document.getElementById("comparison").innerHTML = `Will collide: ${isCol}<br> Time of collision: ${t},<br> Position of collision: ${Pcol},<br> Distance between: ${D}`
+    cc.beginPath()
+    cc.moveTo(p1.pos.x, cc.canvas.height - p1.pos.y)
+    cc.lineTo(p2.pos.x, cc.canvas.height - p2.pos.y)
+    cc.strokeStyle = "white"
+    cc.stroke()
+    cc.closePath()
+
+    // Velocity
+    cc.fillStyle = "white"
+    cc.font = '12px Arial';
+    cc.fillText(`${roundToDecimalPlace(D, 2)}`, (p1.pos.x + p2.pos.x)/2,((cc.canvas.height - p2.pos.y) + (cc.canvas.height - p1.pos.y))/2);
+
+    document.getElementById("comparison").innerHTML = `Will collide: ${isCol}<br> Time of collision: ${t},<br> Position of collision: ${Pcol},<br> Distance between: ${roundToDecimalPlace(D, 2)}`
     return `${isCol}, ${t}, ${Pcol}, ${D}`
 }
