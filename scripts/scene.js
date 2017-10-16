@@ -305,7 +305,6 @@ function loadScene(name="default") {
     }
 
     // Programmatically added projectiles
-    console.log(Presets[name])
     projectiles_to_add = Presets[name]()
     current_preset = name
 
