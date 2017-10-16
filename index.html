@@ -37,20 +37,25 @@
             <br>
             <span><strong>Add projectile:</strong></span>
             <br>
-            <span>Position (initial)</span><button onclick="selectPosition=true;" type="button" name="button">Click for pos</button>
+            Position (initial)<button onclick="selectPosition=true;" type="button" name="button">Click to select position</button>
             <br>
-            <span>  x: </span><input id="inputPosX" style="width:75px" type="number" name="" value="600">
-            <span>  y: </span><input id="inputPosY" style="width:75px" type="number" name="" value="280">
+            x: <input id="inputPosX" style="width:75px" type="number" value="100">
+            y: <input id="inputPosY" style="width:75px" type="number" value="100">
             <br>
-            <span>Velocity (initial)</span>
+            Velocity (initial)
             <br>
-            <span>  x: </span><input id="inputVelX" style="width:75px" type="number" name="" value="0">
-            <span>  y: </span><input id="inputVelY" style="width:75px" type="number" name="" value="0">
+            x: <input id="inputVelX" style="width:75px" type="number" value="0">
+            y: <input id="inputVelY" style="width:75px" type="number" value="0">
+            <br>
+            Mass: <input id="inputMass" style="width:30px" type="number" value="20" min="0.01">
+            Radius: <input id="inputRadius" style="width:30px" type="number" value="20" min="0.01">
             <br>
             <select class="" id="inputColor">
                 <option value="red">Red</option>
                 <option value="green">Green</option>
                 <option value="blue">Blue</option>
+                <option value="purple">Purple</option>
+                <option value="yellow">Yellow</option>
             </select>
             <button id="addProjectileButton" type="submit" name="button">Add</button>
             <br>
@@ -93,16 +98,20 @@ function playButtonPressed() {
     }
 }
 
-window.onload = function () {
-    c = document.getElementById("canvas")
-    cc = c.getContext("2d")
-
-    // Set form min/max values
+function updateRectSize() {
     rect = c.getBoundingClientRect()
     document.getElementById("inputPosX").min = 0
     document.getElementById("inputPosX").max = rect.right
     document.getElementById("inputPosY").min = 0
     document.getElementById("inputPosY").max = rect.bottom
+}
+
+window.onload = function () {
+    c = document.getElementById("canvas")
+    cc = c.getContext("2d")
+
+    // Set form min/max values
+    updateRectSize()
 
     // Populate presets
     var html = ``
@@ -122,11 +131,7 @@ window.onresize = function() {
     render()
     
     // Set form min/max values
-    rect = c.getBoundingClientRect();
-    document.getElementById("inputPosX").min = 0
-    document.getElementById("inputPosX").max = rect.right
-    document.getElementById("inputPosY").min = 0
-    document.getElementById("inputPosY").max = rect.bottom
+    updateRectSize()
 }
 
 canvas.addEventListener('click', function(evt) {

@@ -38,8 +38,10 @@ function addProjectile(pr, id) {
         var vx = Number(document.getElementById("inputVelX").value)
         var vy = Number(document.getElementById("inputVelY").value)
         var color = document.getElementById("inputColor").value
+        var mass = Number(document.getElementById("inputMass").value)
+        var radius = Number(document.getElementById("inputRadius").value)
 
-        p = new Projectile({x: px, y: cc.canvas.height - py, vxi: vx, vyi: vy, color: color, radius: 20})
+        p = new Projectile({x: px, y: cc.canvas.height - py, vxi: vx, vyi: vy, color, radius})
     }
 
     // Set or assign new ID
@@ -208,10 +210,7 @@ function update() {
 
             // f. Calculate the next collision
             next_collision = calulateNextEvent()
-            
-            if (pause) {
-              stop = true
-            }
+
         } else {
             // 3. Simulate projectile's motion
             projectiles.forEach(function(p) {
@@ -262,9 +261,9 @@ function updateLogging(projectile_map, projectiles) {
         <br><br>
         <span>Name: ${projectile_map[i].name}</span>
         <br>
-        <span>Position (mx, my): ${Math.round(projectile_map[i].pos.x*100)/100}, ${Math.round(projectile_map[i].pos.y*100)/100}</span>
+        <span>Pos(x, y): ${Math.round(projectile_map[i].pos.x*100)/100}, ${Math.round(projectile_map[i].pos.y*100)/100}</span>
         <br>
-        <span>Velocity (m/s): ${Math.round(projectile_map[i].vel.x*100)/100}, ${Math.round(projectile_map[i].vel.y*100)/100}</span>
+        <span>Vel(vx, vy): ${Math.round(projectile_map[i].vel.x*100)/100}, ${Math.round(projectile_map[i].vel.y*100)/100}</span>
         `
     })
     document.getElementById("projectiles").innerHTML = projectileLog
