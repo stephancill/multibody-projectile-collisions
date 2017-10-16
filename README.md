@@ -8,8 +8,8 @@ Add projectiles to the scene and press "Start" to begin the simulation.
 Presets are predefined combinations of projectile setups created by us. To load a preset do the following:
 1. Select the Preset from the dropdown menu.
 2. Press the "Load Preset" button.
-3.1 Press the "Start" button to simulate.
-3.2 Press the "Reset" button to reset the simulation.
+3. 1. Press the "Start" button to simulate.
+3. 2. Press the "Reset" button to reset the simulation.
 
 ## Adding projectiles
 There are two ways of adding projectiles to the scene.
