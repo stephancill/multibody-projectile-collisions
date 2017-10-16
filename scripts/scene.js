@@ -41,7 +41,7 @@ function addProjectile(pr, id) {
         var mass = Number(document.getElementById("inputMass").value)
         var radius = Number(document.getElementById("inputRadius").value)
 
-        p = new Projectile({x: px, y: cc.canvas.height - py, vxi: vx, vyi: vy, color, radius})
+        p = new Projectile({x: px, y: py, vxi: vx, vyi: vy, color, radius})
     }
 
     // Set or assign new ID
@@ -341,6 +341,11 @@ function loadScene(name="default") {
 function projComparison() {
     var p1 = projectiles_map[document.getElementById("compare1").value]
     var p2 = projectiles_map[document.getElementById("compare2").value]
+
+    if (document.getElementById("compare2").value == document.getElementById("compare1").value) {
+        return
+    }
+
     var t = timeUntilCollision(p1,p2)
     var isCol = 'Yes'
     var Pcol = null

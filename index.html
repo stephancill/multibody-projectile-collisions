@@ -153,7 +153,7 @@ canvas.addEventListener('click', function(evt) {
             y: evt.pageY - canvas.offsetTop
         };
         document.getElementById("inputPosX").value = mousePos.x
-        document.getElementById("inputPosY").value = mousePos.y
+        document.getElementById("inputPosY").value = cc.canvas.height - mousePos.y 
 
         click1 = mousePos
         selectPosition = false
