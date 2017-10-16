@@ -40,11 +40,11 @@ function solveQuad(a, b, c, floor = false) {
 		} else {
 			var times = [(-b+Math.pow((deltar),0.5))/(2*a),(-b-Math.pow((deltar),0.5))/(2*a)].filter(function (x) { return x >= 0 } )
 			if (times.length > 0) {
-				if (floor == true) {
-					return Math.max(...times)
-				} else {
-					return Math.min(...times)
-				}
+        if (floor) {
+				  return Math.max(...times)
+			  } else {
+				  return Math.min(...times)
+			  }
 			} else {
 				return null
 			}
@@ -223,7 +223,7 @@ function wallCol(projectiles, width, height) {
 			}
 		}
 	}
-	console.log(time_col,proj.id)
+
 	if (time_col != null) {
 		return [Math.abs(roundToDecimalPlace(time_col, rd)), [projectiles[colliding_proj]], colliding_wall]
 	} else {
