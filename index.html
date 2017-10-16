@@ -34,6 +34,14 @@
         </div>
         <br>
 
+        <div>
+            <h3>Compare Projectiles</h3>
+            <br>
+            <select id="compare1"></select>
+            <select id="compare2"></select>
+            <div id="comparison"></div>
+        </div>
+
         <form id="newProjectileForm" onsubmit="return false">
             <br>
             <span><strong>Add projectile:</strong></span>
@@ -202,5 +210,6 @@ document.getElementById("start").addEventListener("click", playButtonPressed)
 document.getElementById("addProjectileButton").addEventListener("click", addProjectile)
 // document.getElementById("reset").addEventListener("click", reset)
 document.getElementById("load").addEventListener("click", loadScene)
+document.getElementById("compare1").addEventListener("click", projComparison)
 
 </script>

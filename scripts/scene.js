@@ -56,6 +56,17 @@ function addProjectile(pr, id) {
         projectiles.push(i)
     }
 
+    var html = ""
+    for (var key in projectiles_map) {
+        if (projectiles_map.hasOwnProperty(key)) {
+            html += `<option value="${key}">${key}</option>`
+        }
+    }
+
+    document.getElementById("compare1").innerHTML = html
+    document.getElementById("compare2").innerHTML = html
+
+
     // Render the new projectile if canvas is available
     if (cc) {
         if (startTime) {
@@ -258,6 +269,8 @@ function render(debugging=false) {
  */
 function updateLogging(projectile_map, projectiles) {
 
+    projComparison()
+
     var projectileLog = ""
     projectiles.forEach(i => {
         projectileLog += `
@@ -323,4 +336,31 @@ function loadScene(name="default") {
     projectiles_to_add = []
 
     render(true)
+}
+
+function projComparison() {
+    var p1 = projectiles_map[document.getElementById("compare1").value]
+    var p2 = projectiles_map[document.getElementById("compare2").value]
+    var t = timeUntilCollision(p1,p2)
+    var isCol = 'Yes'
+    var Pcol = null
+    if (t == null) {
+        isCol = 'No'
+    }
+    var D = Math.pow(Math.pow(p1.pos.x-p2.pos.x,2) + Math.pow(p1.pos.y-p2.pos.y,2),0.5)-p1.radius-p2.radius
+    if (t!=null) {
+    var np1x, np1y, np2x, np2y
+    np1x = p1.pos.xi + p1.vel.x * t;
+    if (((p1.pos.y-p1.radius)!=0) || (p1.vel.y!=0)) {
+        np1y = 1/2 * -G * Math.pow(t, 2) + p1.vel.y * t + p1.pos.yi
+        }
+    np2x = p2.pos.xi + p2.vel.x * t;
+    if (((p2.pos.y-p2.radius)!=0) || (p2.vel.y!=0)) {
+        np2y = 1/2 * -G * Math.pow(t, 2) + p2.vel.y * t + p2.pos.yi
+        }
+    Pcol = (p1.pos.x-(p1.pos.x-p2.pos.x)/(p1.radius+p2.radius)*p1.radius,p1.pos.y-(p1.pos.y-p2.pos.y)/(p1.radius+p2.radius)*p1.radius)
+    }
+
+    document.getElementById("comparison").innerHTML = `${isCol}, ${t}, ${Pcol}, ${D}`
+    return `${isCol}, ${t}, ${Pcol}, ${D}`
 }
