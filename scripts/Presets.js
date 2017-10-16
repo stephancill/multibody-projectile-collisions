@@ -6,7 +6,6 @@ var Presets =  {
             new Projectile({x: 40, y: 200, vxi: 0, vyi: -200, color: "blue", radius: 10, mass: 10})
         ]
     },
-    
     fun: function() {
         var projs = []
         var colors = ["green", "purple", "blue", "red", "yellow"]
@@ -18,5 +17,11 @@ var Presets =  {
         }
 
         return projs
+    },
+    two: function() {
+        return [
+            new Projectile({x: 20, y: 20, vxi: 150, vyi: 150, color: "red", radius: 20, mass: 20}),
+            new Projectile({x: cc.canvas.width-20, y: 20, vxi: -150, vyi: 150, color: "green", radius: 20, mass: 20}),
+        ]
     }
 }
