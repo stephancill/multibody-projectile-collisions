@@ -7,7 +7,7 @@
     </head>
     <body id="grad">
         <div id="center-col">
-            <h1>Simulation of Projectile Motion and Collisions in 2D Space (2017)</h1>
+            <h1 style="text-align:center">Simulation of Projectile Motion and Collisions in 2D Space (2017)</h1>
             <div id="center-row">
                 <div class="name">
                     Stephan Cilliers <br>
@@ -27,32 +27,46 @@
                 <button id="start" type="button" class="bttn-simple bttn-md">Start</button>
                 <!-- <button id="reset" class="bttn-simple bttn-md">Reset</button> -->
                 <button id="load" class="bttn-simple bttn-md">Load Preset</button>
-                <select id="presets"> </select>
+                <select id="presets" style="height: 35px; margin: 0px, 0px, 0px, 0px;"> </select>
+                <input id="debugging" type="checkbox" value="true"> Debugging<br>
             </div>
                
         </div>
         <br>
 
+        <div>
+            <span><strong>Compare projectiles</strong></span>
+            <br>
+            P1 <select id="compare1"></select> <br>
+            P2 <select id="compare2"></select> <br>
+            <div id="comparison"></div>
+        </div>
+
         <form id="newProjectileForm" onsubmit="return false">
             <br>
             <span><strong>Add projectile:</strong></span>
             <br>
-            <span>Position (initial)</span><button onclick="selectPosition=true;" type="button" name="button">Click for pos</button>
+            Position (initial) <button onclick="selectPosition=true;" type="button" class="bttn-simple bttn-xs">Click to select position</button>
             <br>
-            <span>  x: </span><input id="inputPosX" style="width:75px" type="number" name="" value="600">
-            <span>  y: </span><input id="inputPosY" style="width:75px" type="number" name="" value="280">
+            x: <input id="inputPosX" style="width:75px" type="number" value="100">
+            y: <input id="inputPosY" style="width:75px" type="number" value="100">
             <br>
-            <span>Velocity (initial)</span>
+            Velocity (initial)
             <br>
-            <span>  x: </span><input id="inputVelX" style="width:75px" type="number" name="" value="0">
-            <span>  y: </span><input id="inputVelY" style="width:75px" type="number" name="" value="0">
+            x: <input id="inputVelX" style="width:75px" type="number" value="0">
+            y: <input id="inputVelY" style="width:75px" type="number" value="0">
+            <br>
+            Mass: <input id="inputMass" style="width:30px" type="number" value="20" min="0">
+            Radius: <input id="inputRadius" style="width:30px" type="number" value="20" min="0">
             <br>
             <select class="" id="inputColor">
                 <option value="red">Red</option>
                 <option value="green">Green</option>
                 <option value="blue">Blue</option>
+                <option value="purple">Purple</option>
+                <option value="yellow">Yellow</option>
             </select>
-            <button id="addProjectileButton" type="submit" name="button">Add</button>
+            <button id="addProjectileButton" type="submit" class="bttn-simple bttn-xs">Add</button>
             <br>
             <br>
         </form>
@@ -78,6 +92,9 @@
 <script type="text/javascript">
 
 var selectPosition = false
+var selectVelocity = false
+
+var click1
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
@@ -93,16 +110,20 @@ function playButtonPressed() {
     }
 }
 
-window.onload = function () {
-    c = document.getElementById("canvas")
-    cc = c.getContext("2d")
-
-    // Set form min/max values
+function updateRectSize() {
     rect = c.getBoundingClientRect()
     document.getElementById("inputPosX").min = 0
     document.getElementById("inputPosX").max = rect.right
     document.getElementById("inputPosY").min = 0
     document.getElementById("inputPosY").max = rect.bottom
+}
+
+window.onload = function () {
+    c = document.getElementById("canvas")
+    cc = c.getContext("2d")
+
+    // Set form min/max values
+    updateRectSize()
 
     // Populate presets
     var html = ``
@@ -122,11 +143,7 @@ window.onresize = function() {
     render()
     
     // Set form min/max values
-    rect = c.getBoundingClientRect();
-    document.getElementById("inputPosX").min = 0
-    document.getElementById("inputPosX").max = rect.right
-    document.getElementById("inputPosY").min = 0
-    document.getElementById("inputPosY").max = rect.bottom
+    updateRectSize()
 }
 
 canvas.addEventListener('click', function(evt) {
@@ -137,10 +154,22 @@ canvas.addEventListener('click', function(evt) {
         };
         document.getElementById("inputPosX").value = mousePos.x
         document.getElementById("inputPosY").value = mousePos.y
+
+        click1 = mousePos
+        selectPosition = false
+        selectVelocity = true
+    } else if (selectVelocity) {
+        mousePos = {
+            x: evt.pageX - canvas.offsetLeft,
+            y: evt.pageY - canvas.offsetTop
+        }
+
+        document.getElementById("inputVelX").value = mousePos.x - click1.x
+        document.getElementById("inputVelY").value = -mousePos.y + click1.y
+        selectVelocity = false
         addProjectile(evt)
-        console.log(mousePos);
     }
-    selectPosition = false
+    
 });
 
 canvas.onmousemove = function (evt) {
@@ -160,6 +189,16 @@ canvas.onmousemove = function (evt) {
         cc.lineTo(x-5,y)
         cc.moveTo(x,y)
         cc.lineTo(x+5,y)
+        cc.strokeStyle = "white"
+        cc.stroke()
+        cc.closePath()
+    } else if (selectVelocity) {
+        render()
+        var x = evt.pageX - canvas.offsetLeft
+        var y = evt.pageY - canvas.offsetTop
+        cc.beginPath()
+        cc.moveTo(click1.x,click1.y)
+        cc.lineTo(x,y)
         cc.strokeStyle = "white"
         cc.stroke()
         cc.closePath()

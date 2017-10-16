@@ -38,8 +38,10 @@ function addProjectile(pr, id) {
         var vx = Number(document.getElementById("inputVelX").value)
         var vy = Number(document.getElementById("inputVelY").value)
         var color = document.getElementById("inputColor").value
+        var mass = Number(document.getElementById("inputMass").value)
+        var radius = Number(document.getElementById("inputRadius").value)
 
-        p = new Projectile({x: px, y: cc.canvas.height - py, vxi: vx, vyi: vy, color: color, radius: 20})
+        p = new Projectile({x: px, y: cc.canvas.height - py, vxi: vx, vyi: vy, color, radius})
     }
 
     // Set or assign new ID
@@ -54,9 +56,23 @@ function addProjectile(pr, id) {
         projectiles.push(i)
     }
 
+    var html = ""
+    for (var key in projectiles_map) {
+        if (projectiles_map.hasOwnProperty(key)) {
+            html += `<option value="${key}">${key}</option>`
+        }
+    }
+
+    document.getElementById("compare1").innerHTML = html
+    document.getElementById("compare2").innerHTML = html
+
+
     // Render the new projectile if canvas is available
     if (cc) {
-        p.render(cc)
+        if (startTime) {
+            update()
+        }
+        p.render(cc, true)
     }
 }
 
@@ -167,53 +183,50 @@ function reset() {
 
 }
 /**
- * Called on ever frame update
+ * Called on every frame update
  */
 function update() {
-    // Time calculation
+    // 1.1 Time calculation
     deltaTime = new Date() - lastFrame
     lastFrame = new Date()
     
     if (!stop) {
-        // Update time
+        // 1.2 Update time
         time += deltaTime / 1000
         time_total += deltaTime / 1000
 
-        // Check if collision is due
+        // 2. Check if collision is due
         if (time >= next_collision.t) {
             var event = next_collision
 
-            // Set time to exact time of collision
+            // a. Set time to exact time of collision
             time = event.t
             console.log(event)
 
-            // Correct each projectile's position and velocity for the time of collision
+            // b. Correct each projectile's position and velocity for the time of collision
             projectiles.forEach(function(p) {
                 projectiles_map[p].setPositionForTime(event.t)
                 projectiles_map[p].setVelocityForTime(event.t)
             })
 
-            // Update the projectiles involved in the collision's velocities
+            // c. Update the projectiles involved in the collision's velocities
             event.pr.forEach(function (p) {
                 projectiles_map[p].setVelocity(event.new_vels[p].vx, event.new_vels[p].vy)
             })
 
-            // Capture each projectile's current velocity and position as its initial conditions
+            // d. Capture each projectile's current velocity and position as its initial conditions
             projectiles.forEach(function(p) {
                 projectiles_map[p].captureAsInitialConditions()
             })
 
-            // Set the time to 0
+            // e. Set the time to 0
             time = 0
 
-            // Calculate the next collision
+            // f. Calculate the next collision
             next_collision = calulateNextEvent()
-            
-            if (pause) {
-              stop = true
-            }
+
         } else {
-            // Simulate projectile's motion
+            // 3. Simulate projectile's motion
             projectiles.forEach(function(p) {
                 projectiles_map[p].setPositionForTime(time)
                 projectiles_map[p].setVelocityForTime(time)
@@ -222,17 +235,17 @@ function update() {
     }
 
 
-    // Render background and projectiles
+    // 4.1 Render background and projectiles
     render()
 
-    // Display statistics
+    // 4.2 Display statistics
     updateLogging(projectiles_map, projectiles)
 }
 
 /**
  * Render scene and all projectiles
  */
-function render() {
+function render(debugging=false) {
     cc.canvas.width  = window.innerWidth - 40;
     cc.canvas.height = window.innerHeight/2
 
@@ -242,7 +255,7 @@ function render() {
 
     // Render projectiles
     projectiles.forEach(function (i) {
-        projectiles_map[i].render(cc)
+        projectiles_map[i].render(cc, document.getElementById("debugging").checked || debugging)
     })
 
     // Update on-canvas logging
@@ -256,15 +269,17 @@ function render() {
  */
 function updateLogging(projectile_map, projectiles) {
 
+    projComparison()
+
     var projectileLog = ""
     projectiles.forEach(i => {
         projectileLog += `
         <br><br>
         <span>Name: ${projectile_map[i].name}</span>
         <br>
-        <span>Position (mx, my): ${Math.round(projectile_map[i].pos.x*100)/100}, ${Math.round(projectile_map[i].pos.y*100)/100}</span>
+        <span>Pos(x, y): ${Math.round(projectile_map[i].pos.x*100)/100}, ${Math.round(projectile_map[i].pos.y*100)/100}</span>
         <br>
-        <span>Velocity (m/s): ${Math.round(projectile_map[i].vel.x*100)/100}, ${Math.round(projectile_map[i].vel.y*100)/100}</span>
+        <span>Vel(vx, vy): ${Math.round(projectile_map[i].vel.x*100)/100}, ${Math.round(projectile_map[i].vel.y*100)/100}</span>
         `
     })
     document.getElementById("projectiles").innerHTML = projectileLog
@@ -306,7 +321,6 @@ function loadScene(name="default") {
     }
 
     // Programmatically added projectiles
-    console.log(Presets[name])
     projectiles_to_add = Presets[name]()
     current_preset = name
 
@@ -321,5 +335,32 @@ function loadScene(name="default") {
     // Clear queue
     projectiles_to_add = []
 
-    render()
+    render(true)
+}
+
+function projComparison() {
+    var p1 = projectiles_map[document.getElementById("compare1").value]
+    var p2 = projectiles_map[document.getElementById("compare2").value]
+    var t = timeUntilCollision(p1,p2)
+    var isCol = 'Yes'
+    var Pcol = null
+    if (t == null) {
+        isCol = 'No'
+    }
+    var D = Math.pow(Math.pow(p1.pos.x-p2.pos.x,2) + Math.pow(p1.pos.y-p2.pos.y,2),0.5)-p1.radius-p2.radius
+    if (t!=null) {
+    var np1x, np1y, np2x, np2y
+    np1x = p1.pos.xi + p1.vel.x * t;
+    if (((p1.pos.y-p1.radius)!=0) || (p1.vel.y!=0)) {
+        np1y = 1/2 * -G * Math.pow(t, 2) + p1.vel.y * t + p1.pos.yi
+        }
+    np2x = p2.pos.xi + p2.vel.x * t;
+    if (((p2.pos.y-p2.radius)!=0) || (p2.vel.y!=0)) {
+        np2y = 1/2 * -G * Math.pow(t, 2) + p2.vel.y * t + p2.pos.yi
+        }
+    Pcol = (p1.pos.x-(p1.pos.x-p2.pos.x)/(p1.radius+p2.radius)*p1.radius,p1.pos.y-(p1.pos.y-p2.pos.y)/(p1.radius+p2.radius)*p1.radius)
+    }
+
+    document.getElementById("comparison").innerHTML = `Will collide: ${isCol}<br> Time of collision: ${t},<br> Position of collision: ${Pcol},<br> Distance between: ${D}`
+    return `${isCol}, ${t}, ${Pcol}, ${D}`
 }

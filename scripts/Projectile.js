@@ -80,7 +80,7 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, id=null}
      * Render this projectile on the scene canvas
      * @param {HTML Canvas Context} context 
      */
-    this.render = function (context) {
+    this.render = function (context, debugging=true) {
         // Draw shape
         var startPoint = (Math.PI/180)*0;
         var endPoint = (Math.PI/180)*360;
@@ -100,5 +100,22 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, id=null}
         context.fillStyle = "white"
         context.font = '20px serif';
         context.fillText(`${this.id}`, this.pos.x-5*`${this.id}`.length, context.canvas.height - this.pos.y + 6);
+        
+
+        if (debugging) {
+            context.beginPath()
+            context.moveTo(this.pos.x, context.canvas.height - this.pos.y)
+            context.lineTo(this.pos.x + this.vel.x/2, context.canvas.height - (this.pos.y + this.vel.y/2))
+            context.strokeStyle = "white"
+            context.stroke()
+            context.closePath()
+
+            // Velocity
+            context.fillStyle = "white"
+            context.font = '11px serif';
+            context.fillText(`vx: ${roundToDecimalPlace(this.vel.x, 2)}`, this.pos.x + 5, context.canvas.height - this.pos.y);
+            context.fillText(`vy: ${roundToDecimalPlace(this.vel.y, 2)}`, this.pos.x + 5, context.canvas.height - this.pos.y+11);
+    
+        }
     }
 }
