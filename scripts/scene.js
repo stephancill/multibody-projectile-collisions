@@ -361,6 +361,6 @@ function projComparison() {
     Pcol = (p1.pos.x-(p1.pos.x-p2.pos.x)/(p1.radius+p2.radius)*p1.radius,p1.pos.y-(p1.pos.y-p2.pos.y)/(p1.radius+p2.radius)*p1.radius)
     }
 
-    document.getElementById("comparison").innerHTML = `${isCol}, ${t}, ${Pcol}, ${D}`
+    document.getElementById("comparison").innerHTML = `Will collide: ${isCol}<br> Time of collision: ${t},<br> Position of collision: ${Pcol},<br> Distance between: ${D}`
     return `${isCol}, ${t}, ${Pcol}, ${D}`
 }
