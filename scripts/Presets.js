@@ -47,9 +47,9 @@ var Presets =  {
         var Y = cc.canvas.height
         var X = cc.canvas.width
         var K = ((i-30)/100)*(Y/2-40)/(Math.floor((X-60)/100))
-        var p = new Projectile({x: i, y: Y/2-20-K, vxi: 0, vyi: 100, color: "blue", radius: 20})
+        var p = new Projectile({x: i, y: Y/2-20-K, vxi: 0, vyi: getRandomArbitrary(0,200), color: "blue", radius: 20})
         projs.push(p)
-        var p = new Projectile({x: i, y: Y/2+20+K, vxi: 0, vyi: -100, color: "red", radius: 20})
+        var p = new Projectile({x: i, y: Y/2+20+K, vxi: 0, vyi: getRandomArbitrary(0,-200), color: "red", radius: 20})
         projs.push(p)
       }
       return projs
