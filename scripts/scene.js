@@ -58,7 +58,10 @@ function addProjectile(pr, id) {
 
     // Render the new projectile if canvas is available
     if (cc) {
-        p.render(cc)
+        if (startTime) {
+            update()
+        }
+        p.render(cc, true)
     }
 }
 
@@ -231,7 +234,7 @@ function update() {
 /**
  * Render scene and all projectiles
  */
-function render() {
+function render(debugging=false) {
     cc.canvas.width  = window.innerWidth - 40;
     cc.canvas.height = window.innerHeight/2
 
@@ -241,7 +244,7 @@ function render() {
 
     // Render projectiles
     projectiles.forEach(function (i) {
-        projectiles_map[i].render(cc)
+        projectiles_map[i].render(cc, document.getElementById("debugging").checked || debugging)
     })
 
     // Update on-canvas logging
@@ -319,5 +322,5 @@ function loadScene(name="default") {
     // Clear queue
     projectiles_to_add = []
 
-    render()
+    render(true)
 }
