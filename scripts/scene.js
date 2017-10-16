@@ -327,6 +327,9 @@ function loadScene(name="default") {
     projectiles_map = {}
     projectiles = []
 
+    // Update scene settings
+    document.getElementById("gravity").value = G
+
     // Add programmatically added projectiles
     for (var i = 0; i < projectiles_to_add.length; i++) {
         addProjectile(projectiles_to_add[i])
@@ -380,4 +383,8 @@ function projComparison() {
 
     document.getElementById("comparison").innerHTML = `Will collide: ${isCol}<br> Time of collision: ${t},<br> Position of collision: ${Pcol},<br> Distance between: ${roundToDecimalPlace(D, 2)}`
     return `${isCol}, ${t}, ${Pcol}, ${D}`
+}
+
+function updateSceneProperties() {
+    G = Number(document.getElementById("gravity").value)
 }

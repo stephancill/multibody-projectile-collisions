@@ -35,6 +35,15 @@
         <br>
 
         <div>
+            <span><strong>Scene properties</strong></span> 
+            <br>
+            Gravity <input id="gravity" style="width:50px" type="number" value="-9.8">
+            <br>
+            <button id="apply" class="bttn-simple bttn-xs">Apply</button>
+            <br><br>
+        </div>
+
+        <div>
             <span><strong>Compare projectiles</strong></span>
             <br>
             P1 <select id="compare1"></select> <br>
@@ -208,7 +217,7 @@ canvas.onmousemove = function (evt) {
 // Form events
 document.getElementById("start").addEventListener("click", playButtonPressed)
 document.getElementById("addProjectileButton").addEventListener("click", addProjectile)
-// document.getElementById("reset").addEventListener("click", reset)
 document.getElementById("load").addEventListener("click", loadScene)
+document.getElementById("apply").addEventListener("click", updateSceneProperties)
 
 </script>
