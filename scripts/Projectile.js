@@ -90,12 +90,6 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, id=null}
         context.fill();
         context.closePath();
 
-        // Velocity
-        // context.fillStyle = "white"
-        // context.font = '11px serif';
-        // context.fillText(`vx: ${roundToDecimalPlace(this.vel.x, 2)}`, this.pos.x, context.canvas.height - this.pos.y);
-        // context.fillText(`vy: ${roundToDecimalPlace(this.vel.y, 2)}`, this.pos.x, context.canvas.height - this.pos.y+11);
-
         // Label
         context.fillStyle = "white"
         context.font = '20px serif';
@@ -112,7 +106,7 @@ function Projectile ({x, y, vxi, vyi, color="white", mass=10, radius=5, id=null}
 
             // Velocity
             context.fillStyle = "white"
-            context.font = '11px serif';
+            context.font = '11px Arial';
             context.fillText(`vx: ${roundToDecimalPlace(this.vel.x, 2)}`, this.pos.x + 5, context.canvas.height - this.pos.y);
             context.fillText(`vy: ${roundToDecimalPlace(this.vel.y, 2)}`, this.pos.x + 5, context.canvas.height - this.pos.y+11);
     
