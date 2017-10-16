@@ -11,11 +11,11 @@ function roundToDecimalPlace(x, n) {
 
 /**
  * Solve a quadratic equation
- * @param {Number} a 
- * @param {Number} b 
- * @param {Number} c 
+ * @param {Number} a
+ * @param {Number} b
+ * @param {Number} c
  */
-function solveQuad(a, b, c) {
+function solveQuad(a, b, c, floor = false) {
 	if (a == 0) {
 		if (b == 0) {
 			if (c == 0) {
@@ -40,7 +40,11 @@ function solveQuad(a, b, c) {
 		} else {
 			var times = [(-b+Math.pow((deltar),0.5))/(2*a),(-b-Math.pow((deltar),0.5))/(2*a)].filter(function (x) { return x >= 0 } )
 			if (times.length > 0) {
+				if (floor) {
+				return Math.max(...times)
+			} else {
 				return Math.min(...times)
+			}
 			} else {
 				return null
 			}
@@ -52,7 +56,7 @@ function solveQuad(a, b, c) {
 /**
  * Return the time of the next collision between p1 and p2 or null
  * @param {Projectile} p1
- * @param {Projectile} p2 
+ * @param {Projectile} p2
  * @returns {Number || null} - Time of collision between p1 and p2
  */
 function timeUntilCollision(p1, p2) {
@@ -82,10 +86,10 @@ function timeUntilCollision(p1, p2) {
 }
 
 /**
- * Returns new velocities of colliding projectiles p1 and p2 
+ * Returns new velocities of colliding projectiles p1 and p2
  * or p1 and a wall after colliding
- * @param {Projectile} p1 
- * @param {Projectile} p2 
+ * @param {Projectile} p1
+ * @param {Projectile} p2
  * @param {String} wall - "x" or "y" describing axis of collision
  * @returns {Integer: {vx, vy}} - {ID: {x vel, y vel}}
  */
@@ -199,7 +203,7 @@ function wallCol(projectiles, width, height) {
 		}
 
 		if (((proj.pos.y-proj.radius)!=0) || (proj.vel.y!=0)) {
-			time_new = solveQuad(0.5*G,proj.vel.y,-proj.radius+proj.pos.y)
+			time_new = solveQuad(0.5*G,proj.vel.y,-proj.radius+proj.pos.y,true)
 			if (time_new != null) {
 				var newt = time_new+Math.pow(10,-4)
 				var newp = proj.pos.y + newt*proj.vel.y + 0.5*G*Math.pow(newt,2)
@@ -219,6 +223,7 @@ function wallCol(projectiles, width, height) {
 			}
 		}
 	}
+	console.log(time_col,colliding_wall,'OKFOK',proj.id)
 	if (time_col != null) {
 		return [Math.abs(roundToDecimalPlace(time_col, rd)), [projectiles[colliding_proj]], colliding_wall]
 	} else {
@@ -267,4 +272,3 @@ Cycle
 4. Update colliding projectiles pos/vel
 5. Step 1
 */
-
