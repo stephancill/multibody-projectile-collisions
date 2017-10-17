@@ -21,7 +21,7 @@ var Presets =  {
         return projs
     },
     two: function() {
-        G = -9.8
+        G = -50
         return [
             new Projectile({x: 20, y: 20, vxi: 150, vyi: 150, color: "red", radius: 20, mass: 20}),
             new Projectile({x: cc.canvas.width-20, y: 20, vxi: -150, vyi: 150, color: "green", radius: 20, mass: 20}),
